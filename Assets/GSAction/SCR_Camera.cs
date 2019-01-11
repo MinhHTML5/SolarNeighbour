@@ -24,7 +24,7 @@ public class SCR_Camera : MonoBehaviour {
 	
 	private float currentXAngle			= 30;
 	private float currentYAngle			= 0;
-	private float currentDistance		= 50;
+	private float currentDistance		= 200;
 	
     private void Start() {
         
@@ -54,7 +54,7 @@ public class SCR_Camera : MonoBehaviour {
 			}
 		}
 		
-		if (Input.GetKey(KeyCode.E)) {
+		if (Input.GetKey(KeyCode.R)) {
 			currentXSpeed += ROTATE_ACCELERATION * dt;
 			if (currentXSpeed > ROTATE_MAX_SPEED) currentXSpeed = ROTATE_MAX_SPEED;
 		}
@@ -64,7 +64,7 @@ public class SCR_Camera : MonoBehaviour {
 				if (currentXSpeed < 0) currentXSpeed = 0;
 			}
 		}
-		if (Input.GetKey(KeyCode.Q)) {
+		if (Input.GetKey(KeyCode.F)) {
 			currentXSpeed -= ROTATE_ACCELERATION * dt;
 			if (currentXSpeed < -ROTATE_MAX_SPEED) currentXSpeed = -ROTATE_MAX_SPEED;
 		}

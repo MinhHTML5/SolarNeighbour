@@ -6,18 +6,20 @@ public class SCR_Sun : MonoBehaviour {
 	public float ROTATION_SPEED;
 	public float MASS;
 	
-	private float angle = 0;
+	public static float M;
+	
+	private float rotation = 0;
 	
     private void Start() {
-        
+        M = MASS;
     }
 
     private void Update() {
         float dt = Time.deltaTime;
-		angle += ROTATION_SPEED * dt;
-		if (angle > 360) angle -= 360;
-		else if (angle < 0) angle += 360;
+		rotation += ROTATION_SPEED * dt;
+		if (rotation > 360) rotation -= 360;
+		else if (rotation < 0) rotation += 360;
 		
-		gameObject.transform.localEulerAngles = new Vector3(0, angle, 0);
+		gameObject.transform.localEulerAngles = new Vector3(0, rotation, 0);
     }
 }
