@@ -33,7 +33,7 @@ public class SCR_Camera : MonoBehaviour {
 	private void HandleKey() {
 		float dt = Time.deltaTime;
 		
-		if (Input.GetKey(KeyCode.A)) {
+		if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.Q)) {
 			currentYSpeed += ROTATE_ACCELERATION * dt;
 			if (currentYSpeed > ROTATE_MAX_SPEED) currentYSpeed = ROTATE_MAX_SPEED;
 		}
@@ -43,7 +43,7 @@ public class SCR_Camera : MonoBehaviour {
 				if (currentYSpeed < 0) currentYSpeed = 0;
 			}
 		}
-		if (Input.GetKey(KeyCode.D)) {
+		if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.E)) {
 			currentYSpeed -= ROTATE_ACCELERATION * dt;
 			if (currentYSpeed < -ROTATE_MAX_SPEED) currentYSpeed = -ROTATE_MAX_SPEED;
 		}

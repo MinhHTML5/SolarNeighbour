@@ -6,9 +6,8 @@ public class SCR_Action : MonoBehaviour {
 	public float			ORBIT_DISTANCE_MIN;
 	public float			ORBIT_DISTANCE_MAX;
 	public int				NUMBER_OF_PLANET;
-	public float			GRAVITY_CONSTANT;
 	
-	public static float		G;
+	public static float		GRAVITY_CONSTANT = 0.000001f;
 	
 	
 	public GameObject[] 	PFB_Planet;
@@ -20,8 +19,6 @@ public class SCR_Action : MonoBehaviour {
 	
 	
     private void Start() {
-		G = GRAVITY_CONSTANT;
-		
         List<GameObject> planetsToPickFrom = new List<GameObject>(PFB_Planet);
 		
 		planets = new GameObject[NUMBER_OF_PLANET];

@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class SCR_Sun : MonoBehaviour {
 	public float ROTATION_SPEED;
-	public float MASS;
 	
-	public static float M;
+	public static float MASS = 1000000000;
 	
 	private float rotation = 0;
 	
     private void Start() {
-        M = MASS;
+        
     }
 
     private void Update() {

@@ -162,7 +162,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 1
-  far clip plane: 4000
+  far clip plane: 3000
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -214,7 +214,7 @@ MonoBehaviour:
   MOVE_DECELERATION: 1000
   MOVE_MAX_SPEED: 1000
   MIN_DISTANCE: 100
-  MAX_DISTANCE: 2000
+  MAX_DISTANCE: 1200
   MIN_X_ANGLE: 0
   MAX_X_ANGLE: 60
 --- !u!1 &668067315
@@ -311,7 +311,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ROTATION_SPEED: 1
-  MASS: 1e+9
 --- !u!1 &2112755764
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,8 +340,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25676627935ab514686806c39e922536, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ORBIT_DISTANCE_MIN: 70
-  ORBIT_DISTANCE_MAX: 150
+  ORBIT_DISTANCE_MIN: 50
+  ORBIT_DISTANCE_MAX: 100
   NUMBER_OF_PLANET: 8
   PFB_Planet:
   - {fileID: 8777763535850294346, guid: 5d1599bdc841b674a966654e0f67f324, type: 3}
