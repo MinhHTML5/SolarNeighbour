@@ -15,12 +15,14 @@ public class SCR_Action : MonoBehaviour {
 	public GameObject 		sun;
 	public GameObject[] 	planets;
 	
-	private float currentDistance = 0;
+	
+	public static GameObject homePlanet;
 	
 	
     private void Start() {
         List<GameObject> planetsToPickFrom = new List<GameObject>(PFB_Planet);
 		
+		float currentDistance = 0;
 		planets = new GameObject[NUMBER_OF_PLANET];
 		for (int i=0; i<NUMBER_OF_PLANET; i++) {
 			currentDistance += Random.Range (ORBIT_DISTANCE_MIN, ORBIT_DISTANCE_MAX);
@@ -29,6 +31,9 @@ public class SCR_Action : MonoBehaviour {
 			planets[i].GetComponent<SCR_Planet>().Init (currentDistance, Random.Range(0, 360));
 			planetsToPickFrom.RemoveAt (chosen);
 		}
+		
+		// TEST
+		homePlanet = planets[4];
     }
 	
     private void Update() {

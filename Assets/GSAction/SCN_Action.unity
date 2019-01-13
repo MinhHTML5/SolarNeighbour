@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.021151247, g: 0.028231116, b: 0.033729136, a: 1}
+  m_IndirectSpecularColor: {r: 0.022124872, g: 0.02898136, b: 0.03481617, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -213,10 +213,12 @@ MonoBehaviour:
   MOVE_ACCELERATION: 800
   MOVE_DECELERATION: 1000
   MOVE_MAX_SPEED: 1000
-  MIN_DISTANCE: 100
+  MIN_DISTANCE: 50
   MAX_DISTANCE: 1200
   MIN_X_ANGLE: 0
   MAX_X_ANGLE: 60
+  CENTER_SPEED_ACCELERATION: 150
+  CENTER_SPEED_CAP_MULTIPLIER: 0.05
 --- !u!1 &668067315
 GameObject:
   m_ObjectHideFlags: 0

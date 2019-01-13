@@ -16,9 +16,16 @@ public class SCR_Camera : MonoBehaviour {
 	public float MIN_X_ANGLE;
 	public float MAX_X_ANGLE;
 	
+	public float CENTER_SPEED_ACCELERATION;
+	public float CENTER_SPEED_CAP_MULTIPLIER;
 	
+	
+	private bool  viewHome				= false;
 	private float centerX				= 0;
 	private float centerZ				= 0;
+	private float centerTargetX			= 0;
+	private float centerTargetZ			= 0;
+	private float centerSpeed			= 0;
 	
 	private float currentXSpeed			= 0;
 	private float currentYSpeed			= 0;
@@ -97,13 +104,53 @@ public class SCR_Camera : MonoBehaviour {
 				if (currentZSpeed > 0) currentZSpeed = 0;
 			}
 		}
+		
+		if (Input.GetKeyDown(KeyCode.V)) {
+			if (viewHome == false) {
+				viewHome = true;
+				centerTargetX = SCR_Action.homePlanet.transform.position.x;
+				centerTargetZ = SCR_Action.homePlanet.transform.position.z;
+			}
+			else {
+				viewHome = false;
+				centerTargetX = 0;
+				centerTargetZ = 0;
+			}
+		}
 	}
 
     private void Update() {
-        float dt = Time.deltaTime;
+		float dt = Time.deltaTime;
 		
+		// Input command
 		HandleKey();
 		
+		// Chase center point
+		if (viewHome == true) {
+			centerTargetX = SCR_Action.homePlanet.transform.position.x;
+			centerTargetZ = SCR_Action.homePlanet.transform.position.z;
+		}
+        
+		float centerDistance = SCR_Helper.DistanceBetweenTwoPoint (centerX, centerZ, centerTargetX, centerTargetZ);
+		float centerAngle = SCR_Helper.AngleBetweenTwoPoint (centerX, centerZ, centerTargetX, centerTargetZ);
+		
+		float centerTargetSpeed = centerDistance * CENTER_SPEED_CAP_MULTIPLIER;
+		float centerAcceleration = CENTER_SPEED_ACCELERATION * dt;
+		if (centerTargetSpeed > centerSpeed + centerAcceleration) {
+			centerSpeed += centerAcceleration;
+		}
+		else if (centerTargetSpeed < centerSpeed - centerAcceleration) {
+			centerSpeed -= centerAcceleration;
+		}
+		else {
+			centerSpeed = centerTargetSpeed;
+		}
+		
+		centerX += centerSpeed * SCR_Helper.Sin(centerAngle);
+		centerZ += centerSpeed * SCR_Helper.Cos(centerAngle);
+		
+		
+		// Movement around center point
 		currentYAngle += currentYSpeed * dt;
 		if (currentYAngle > 360) currentYAngle -= 360;
 		if (currentYAngle < 0) currentYAngle += 360;
@@ -128,6 +175,7 @@ public class SCR_Camera : MonoBehaviour {
 			currentZSpeed = 0;
 		}
 		
+		// Apply actual transformation
 		float flatDistance = SCR_Helper.Cos(currentXAngle) * currentDistance;
 		float y = SCR_Helper.Sin(currentXAngle) * currentDistance;
 		float x = SCR_Helper.Sin(currentYAngle) * flatDistance + centerX;
