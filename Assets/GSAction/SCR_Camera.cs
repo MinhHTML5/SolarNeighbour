@@ -17,6 +17,8 @@ public class SCR_Camera : MonoBehaviour {
 	public float MAX_X_ANGLE;
 	
 	
+	private float centerX				= 0;
+	private float centerZ				= 0;
 	
 	private float currentXSpeed			= 0;
 	private float currentYSpeed			= 0;
@@ -128,8 +130,8 @@ public class SCR_Camera : MonoBehaviour {
 		
 		float flatDistance = SCR_Helper.Cos(currentXAngle) * currentDistance;
 		float y = SCR_Helper.Sin(currentXAngle) * currentDistance;
-		float x = SCR_Helper.Sin(currentYAngle) * flatDistance;
-		float z = SCR_Helper.Cos(currentYAngle) * flatDistance;
+		float x = SCR_Helper.Sin(currentYAngle) * flatDistance + centerX;
+		float z = SCR_Helper.Cos(currentYAngle) * flatDistance + centerZ;
 		
 		gameObject.transform.position = new Vector3(x, y, z);
 		gameObject.transform.localEulerAngles = new Vector3(currentXAngle, currentYAngle + 180, 0);

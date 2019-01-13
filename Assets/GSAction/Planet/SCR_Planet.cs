@@ -16,6 +16,7 @@ public class SCR_Planet : MonoBehaviour {
 	public float angularSpeed;
 	
 	private float rotation = 0;
+	private VectorLine orbitLine;
 	
     private void Start() {
         
@@ -25,7 +26,18 @@ public class SCR_Planet : MonoBehaviour {
 		distance = d;
 		angle = a;
 		
-		DrawOrbit();
+		VectorManager.useDraw3D = true;
+		
+		List<Vector3> circlePoints = new List<Vector3>();
+		for (int i=0; i<=360; i++) {
+			float tempX = SCR_Helper.Sin(i) * distance;
+			float tempY = SCR_Helper.Cos(i) * distance;
+			circlePoints.Add (new Vector3(tempX, 0, tempY));
+		}
+		orbitLine = new VectorLine("VEC_Orbit", circlePoints, 1.0f);
+		orbitLine.lineType = LineType.Continuous;
+		orbitLine.material = orbitMaterial;
+		orbitLine.Draw3DAuto();
 		
 		orbitalSpeed = Mathf.Sqrt(SCR_Action.GRAVITY_CONSTANT * SCR_Sun.MASS / distance);
 		angularSpeed = Mathf.Atan(orbitalSpeed / distance);
@@ -46,17 +58,6 @@ public class SCR_Planet : MonoBehaviour {
     }
 	
 	private void DrawOrbit() {
-		VectorManager.useDraw3D = true;
 		
-		List<Vector3> circlePoints = new List<Vector3>();
-		for (int i=0; i<=360; i++) {
-			float tempX = SCR_Helper.Sin(i) * distance;
-			float tempY = SCR_Helper.Cos(i) * distance;
-			circlePoints.Add (new Vector3(tempX, 0, tempY));
-		}
-		VectorLine orbit = new VectorLine("VEC_Orbit", circlePoints, 1.0f);
-		orbit.lineType = LineType.Continuous;
-		orbit.material = orbitMaterial;
-		orbit.Draw3DAuto();
 	}
 }
