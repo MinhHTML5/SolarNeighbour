@@ -11,9 +11,8 @@ public class SCR_Planet : MonoBehaviour {
 	public Material orbitMaterial;
 	
 	public float distance;
-	public float orbitalSpeed;
 	public float angle;
-	public float angularSpeed;
+	public float speed;
 	
 	private float rotation = 0;
 	private VectorLine orbitLine;
@@ -22,9 +21,10 @@ public class SCR_Planet : MonoBehaviour {
         
     }
 	
-	public void Init (float d, float a) {
+	public void Init (float d, float a, float s) {
 		distance = d;
 		angle = a;
+		speed = s;
 		
 		VectorManager.useDraw3D = true;
 		
@@ -38,10 +38,6 @@ public class SCR_Planet : MonoBehaviour {
 		orbitLine.lineType = LineType.Continuous;
 		orbitLine.material = orbitMaterial;
 		orbitLine.Draw3DAuto();
-		
-		orbitalSpeed = Mathf.Sqrt(SCR_Action.GRAVITY_CONSTANT * SCR_Sun.MASS / distance);
-		angularSpeed = Mathf.Atan(orbitalSpeed / distance);
-		angularSpeed = angularSpeed * SCR_Helper.RAD_TO_DEG;
 	}
 
     private void Update() {
@@ -51,7 +47,7 @@ public class SCR_Planet : MonoBehaviour {
 		else if (rotation < 0) rotation += 360;
 		gameObject.transform.localEulerAngles = new Vector3(0, rotation, 0);
 		
-		angle += angularSpeed * dt;
+		angle += speed * dt;
 		if (angle > 360) angle -= 360;
 		else if (angle < 0) angle += 360;
 		gameObject.transform.position = new Vector3(distance * SCR_Helper.Sin(angle), 0, distance * SCR_Helper.Cos(angle));

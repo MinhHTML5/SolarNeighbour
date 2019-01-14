@@ -19,6 +19,10 @@ public class SCR_Camera : MonoBehaviour {
 	public float CENTER_SPEED_ACCELERATION;
 	public float CENTER_SPEED_CAP_MULTIPLIER;
 	
+	public float MOUSE_X_MULTIPLIER;
+	public float MOUSE_Y_MULTIPLIER;
+	public float MOUSE_Z_MULTIPLIER;
+	
 	
 	private bool  viewHome				= false;
 	private float centerX				= 0;
@@ -34,6 +38,10 @@ public class SCR_Camera : MonoBehaviour {
 	private float currentXAngle			= 30;
 	private float currentYAngle			= 0;
 	private float currentDistance		= 200;
+	
+	private bool  mouseDown				= false;
+	private float mouseDownX			= 0;
+	private float mouseDownY			= 0;
 	
     private void Start() {
         
@@ -108,8 +116,8 @@ public class SCR_Camera : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.V)) {
 			if (viewHome == false) {
 				viewHome = true;
-				centerTargetX = SCR_Action.homePlanet.transform.position.x;
-				centerTargetZ = SCR_Action.homePlanet.transform.position.z;
+				centerTargetX = SCR_Action.instance.homePlanet.transform.position.x;
+				centerTargetZ = SCR_Action.instance.homePlanet.transform.position.z;
 			}
 			else {
 				viewHome = false;
@@ -118,17 +126,60 @@ public class SCR_Camera : MonoBehaviour {
 			}
 		}
 	}
+	
+	
+	private void HandleMouse() {
+		float dt = Time.deltaTime;
+		if (Input.GetMouseButton(0)) {
+			if (mouseDown == false) {
+				mouseDown = true;
+				mouseDownX = Input.mousePosition.x;
+				mouseDownY = Input.mousePosition.y;
+				currentXSpeed = 0;
+				currentYSpeed = 0;
+			}
+			else {
+				float deltaX = Input.mousePosition.x - mouseDownX;
+				float deltaY = Input.mousePosition.y - mouseDownY;
+				mouseDownX = Input.mousePosition.x;
+				mouseDownY = Input.mousePosition.y;
+				
+				currentYAngle += deltaX * MOUSE_X_MULTIPLIER;
+				currentXAngle += deltaY * MOUSE_Y_MULTIPLIER;
+			}
+		}
+		else {
+			if (mouseDown) {
+				float deltaX = Input.mousePosition.x - mouseDownX;
+				float deltaY = Input.mousePosition.y - mouseDownY;
+				currentYSpeed += deltaX * MOUSE_X_MULTIPLIER * dt * 1000;
+				currentXSpeed += deltaY * MOUSE_Y_MULTIPLIER * dt * 1000;
+				if (currentYSpeed > ROTATE_MAX_SPEED) currentYSpeed = ROTATE_MAX_SPEED;
+				if (currentYSpeed < -ROTATE_MAX_SPEED) currentYSpeed = -ROTATE_MAX_SPEED;
+				if (currentXSpeed > ROTATE_MAX_SPEED) currentXSpeed = ROTATE_MAX_SPEED;
+				if (currentXSpeed < -ROTATE_MAX_SPEED) currentXSpeed = -ROTATE_MAX_SPEED;
+				mouseDown = false;
+			}
+		}
+		
+		if (Input.GetAxis("Mouse ScrollWheel") != 0) {
+			currentZSpeed += Input.GetAxis("Mouse ScrollWheel") * MOUSE_Z_MULTIPLIER;
+		}
+	}
+	
+	
 
     private void Update() {
 		float dt = Time.deltaTime;
 		
 		// Input command
 		HandleKey();
+		HandleMouse();
 		
 		// Chase center point
 		if (viewHome == true) {
-			centerTargetX = SCR_Action.homePlanet.transform.position.x;
-			centerTargetZ = SCR_Action.homePlanet.transform.position.z;
+			centerTargetX = SCR_Action.instance.homePlanet.transform.position.x;
+			centerTargetZ = SCR_Action.instance.homePlanet.transform.position.z;
 		}
         
 		float centerDistance = SCR_Helper.DistanceBetweenTwoPoint (centerX, centerZ, centerTargetX, centerTargetZ);

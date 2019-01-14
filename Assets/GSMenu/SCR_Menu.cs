@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class SCR_Menu : MonoBehaviour {
     private void Start() {
-        
+        if (SCR_Loading.firstTimeRun) {
+			SCR_Loading.LoadScene ("GSMenu/SCN_Menu");
+			return;
+		}
     }
 
     private void Update() {
@@ -12,6 +15,6 @@ public class SCR_Menu : MonoBehaviour {
     }
 	
 	public void OnPlay() {
-		
+		SCR_Loading.LoadScene ("GSAction/SCN_Action");
 	}
 }

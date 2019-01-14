@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.021359378, g: 0.028976785, b: 0.034155536, a: 1}
+  m_IndirectSpecularColor: {r: 0.02660279, g: 0.036009796, b: 0.04434538, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -208,9 +208,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02de9eedb90ca92419c0f22e4ba346ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ROTATE_ACCELERATION: 200
-  ROTATE_DECELERATION: 120
-  ROTATE_MAX_SPEED: 50
+  ROTATE_ACCELERATION: 500
+  ROTATE_DECELERATION: 240
+  ROTATE_MAX_SPEED: 150
   MOVE_ACCELERATION: 800
   MOVE_DECELERATION: 1000
   MOVE_MAX_SPEED: 1000
@@ -220,6 +220,9 @@ MonoBehaviour:
   MAX_X_ANGLE: 60
   CENTER_SPEED_ACCELERATION: 150
   CENTER_SPEED_CAP_MULTIPLIER: 0.05
+  MOUSE_X_MULTIPLIER: 0.2
+  MOUSE_Y_MULTIPLIER: -0.1
+  MOUSE_Z_MULTIPLIER: -1000
 --- !u!114 &534669907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -302,6 +305,98 @@ Transform:
   m_Father: {fileID: 2037621486}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &996837465
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 996837467}
+  - component: {fileID: 996837466}
+  m_Layer: 0
+  m_Name: SCR_FakeServer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &996837466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 996837465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e818deae12646a4b9a4cb16e3df5e55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SUN_MASS: 1000000000
+  NUMBER_OF_PLANET_TEMPLATE: 17
+  NUMBER_OF_PLANET_CREATE: 8
+  ORBIT_DISTANCE_MIN: 50
+  ORBIT_DISTANCE_MAX: 150
+  GRAVITY_CONSTANT: 0.000001
+--- !u!4 &996837467
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 996837465}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1139969909
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1139969911}
+  - component: {fileID: 1139969910}
+  m_Layer: 0
+  m_Name: SCR_Client
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1139969910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1139969909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05148e3928ee8db4da03c5c09c257cc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1139969911
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1139969909}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2037621485 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6839402033527162402, guid: 5c02629a1acbd1749a592db3d27e0b6f,
@@ -356,9 +451,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25676627935ab514686806c39e922536, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ORBIT_DISTANCE_MIN: 50
-  ORBIT_DISTANCE_MAX: 100
-  NUMBER_OF_PLANET: 8
   PFB_Planet:
   - {fileID: 8777763535850294346, guid: 5d1599bdc841b674a966654e0f67f324, type: 3}
   - {fileID: 8777763535850294346, guid: b6df1bcb52d963f42b61749fcbdf42f6, type: 3}
@@ -533,7 +625,7 @@ PrefabInstance:
     - target: {fileID: 6839402033065271624, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
       propertyPath: InitialModule.maxNumParticles
-      value: 800
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 6839402033065271624, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
@@ -543,7 +635,7 @@ PrefabInstance:
     - target: {fileID: 6839402033065271624, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
-      value: 800
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 6839402033065271624, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
@@ -673,7 +765,7 @@ PrefabInstance:
     - target: {fileID: 6839402033065271624, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
       propertyPath: InitialModule.startLifetime.scalar
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 6839402033065271624, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
@@ -693,7 +785,7 @@ PrefabInstance:
     - target: {fileID: 6839402033065271624, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
       propertyPath: EmissionModule.rateOverTime.scalar
-      value: 200
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6839402033065271624, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
@@ -703,7 +795,7 @@ PrefabInstance:
     - target: {fileID: 6839402033065271624, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
       propertyPath: InitialModule.startLifetime.minScalar
-      value: 2
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6839402033065271625, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
@@ -743,7 +835,7 @@ PrefabInstance:
     - target: {fileID: 6839402033239306167, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
-      value: 400
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6839402033239306167, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
@@ -873,7 +965,7 @@ PrefabInstance:
     - target: {fileID: 6839402033239306167, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
       propertyPath: InitialModule.startLifetime.scalar
-      value: 10
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6839402033239306167, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
@@ -893,12 +985,17 @@ PrefabInstance:
     - target: {fileID: 6839402033239306167, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
       propertyPath: InitialModule.maxNumParticles
-      value: 400
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6839402033239306167, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
       propertyPath: EmissionModule.rateOverTime.scalar
-      value: 100
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6839402033239306167, guid: 5c02629a1acbd1749a592db3d27e0b6f,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.minScalar
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 6839402033239306168, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
