@@ -4,40 +4,41 @@ using UnityEngine;
 
 public class SCR_Camera : MonoBehaviour {
 	public float ROTATE_ACCELERATION;
-	public float ROTATE_DECELERATION;
-	public float ROTATE_MAX_SPEED;
-	
+	public float ROTATE_MULTIPLIER;
+	public float DISTANCE_ACCELERATION;
+	public float DISTANCE_MULTIPLIER;
 	public float MOVE_ACCELERATION;
-	public float MOVE_DECELERATION;
-	public float MOVE_MAX_SPEED;
+	public float MOVE_MULTIPLIER;
+
 	public float MIN_DISTANCE;
 	public float MAX_DISTANCE;
 	
 	public float MIN_X_ANGLE;
 	public float MAX_X_ANGLE;
 	
-	public float CENTER_SPEED_ACCELERATION;
-	public float CENTER_SPEED_CAP_MULTIPLIER;
-	
-	public float MOUSE_X_MULTIPLIER;
-	public float MOUSE_Y_MULTIPLIER;
-	public float MOUSE_Z_MULTIPLIER;
+	public float MOUSE_X_SENSITIVITY;
+	public float MOUSE_Y_SENSITIVITY;
+	public float MOUSE_Z_SENSITIVITY;
 	
 	
 	private bool  viewHome				= false;
 	private float centerX				= 0;
 	private float centerZ				= 0;
+	private float centerSpeed			= 0;
 	private float centerTargetX			= 0;
 	private float centerTargetZ			= 0;
-	private float centerSpeed			= 0;
 	
-	private float currentXSpeed			= 0;
-	private float currentYSpeed			= 0;
-	private float currentZSpeed			= 0;
+	private float rotateXSpeed			= 0;
+	private float rotateYSpeed			= 0;
+	private float distanceZSpeed		= 0;
 	
 	private float currentXAngle			= 30;
 	private float currentYAngle			= 0;
-	private float currentDistance		= 200;
+	private float currentZDistance		= 200;
+	
+	private float targetXAngle			= 30;
+	private float targetYAngle			= 0;
+	private float targetZDistance		= 200;
 	
 	private bool  mouseDown				= false;
 	private float mouseDownX			= 0;
@@ -48,71 +49,6 @@ public class SCR_Camera : MonoBehaviour {
     }
 	
 	private void HandleKey() {
-		float dt = Time.deltaTime;
-		
-		if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.Q)) {
-			currentYSpeed += ROTATE_ACCELERATION * dt;
-			if (currentYSpeed > ROTATE_MAX_SPEED) currentYSpeed = ROTATE_MAX_SPEED;
-		}
-		else {
-			if (currentYSpeed > 0) {
-				currentYSpeed -= ROTATE_DECELERATION * dt;
-				if (currentYSpeed < 0) currentYSpeed = 0;
-			}
-		}
-		if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.E)) {
-			currentYSpeed -= ROTATE_ACCELERATION * dt;
-			if (currentYSpeed < -ROTATE_MAX_SPEED) currentYSpeed = -ROTATE_MAX_SPEED;
-		}
-		else {
-			if (currentYSpeed < 0) {
-				currentYSpeed += ROTATE_DECELERATION * dt;
-				if (currentYSpeed > 0) currentYSpeed = 0;
-			}
-		}
-		
-		if (Input.GetKey(KeyCode.R)) {
-			currentXSpeed += ROTATE_ACCELERATION * dt;
-			if (currentXSpeed > ROTATE_MAX_SPEED) currentXSpeed = ROTATE_MAX_SPEED;
-		}
-		else {
-			if (currentXSpeed > 0) {
-				currentXSpeed -= ROTATE_DECELERATION * dt;
-				if (currentXSpeed < 0) currentXSpeed = 0;
-			}
-		}
-		if (Input.GetKey(KeyCode.F)) {
-			currentXSpeed -= ROTATE_ACCELERATION * dt;
-			if (currentXSpeed < -ROTATE_MAX_SPEED) currentXSpeed = -ROTATE_MAX_SPEED;
-		}
-		else {
-			if (currentXSpeed < 0) {
-				currentXSpeed += ROTATE_DECELERATION * dt;
-				if (currentXSpeed > 0) currentXSpeed = 0;
-			}
-		}
-		
-		if (Input.GetKey(KeyCode.S)) {
-			currentZSpeed += MOVE_ACCELERATION * dt;
-			if (currentZSpeed > MOVE_MAX_SPEED) currentZSpeed = MOVE_MAX_SPEED;
-		}
-		else {
-			if (currentZSpeed > 0) {
-				currentZSpeed -= MOVE_DECELERATION * dt;
-				if (currentZSpeed < 0) currentZSpeed = 0;
-			}
-		}
-		if (Input.GetKey(KeyCode.W)) {
-			currentZSpeed -= MOVE_ACCELERATION * dt;
-			if (currentZSpeed < -MOVE_MAX_SPEED) currentZSpeed = -MOVE_MAX_SPEED;
-		}
-		else {
-			if (currentZSpeed < 0) {
-				currentZSpeed += MOVE_DECELERATION * dt;
-				if (currentZSpeed > 0) currentZSpeed = 0;
-			}
-		}
-		
 		if (Input.GetKeyDown(KeyCode.V)) {
 			if (viewHome == false) {
 				viewHome = true;
@@ -127,46 +63,19 @@ public class SCR_Camera : MonoBehaviour {
 		}
 	}
 	
-	
-	private void HandleMouse() {
-		float dt = Time.deltaTime;
-		if (Input.GetMouseButton(0)) {
-			if (mouseDown == false) {
-				mouseDown = true;
-				mouseDownX = Input.mousePosition.x;
-				mouseDownY = Input.mousePosition.y;
-				currentXSpeed = 0;
-				currentYSpeed = 0;
-			}
-			else {
-				float deltaX = Input.mousePosition.x - mouseDownX;
-				float deltaY = Input.mousePosition.y - mouseDownY;
-				mouseDownX = Input.mousePosition.x;
-				mouseDownY = Input.mousePosition.y;
-				
-				currentYAngle += deltaX * MOUSE_X_MULTIPLIER;
-				currentXAngle += deltaY * MOUSE_Y_MULTIPLIER;
-			}
-		}
-		else {
-			if (mouseDown) {
-				float deltaX = Input.mousePosition.x - mouseDownX;
-				float deltaY = Input.mousePosition.y - mouseDownY;
-				currentYSpeed += deltaX * MOUSE_X_MULTIPLIER * dt * 1000;
-				currentXSpeed += deltaY * MOUSE_Y_MULTIPLIER * dt * 1000;
-				if (currentYSpeed > ROTATE_MAX_SPEED) currentYSpeed = ROTATE_MAX_SPEED;
-				if (currentYSpeed < -ROTATE_MAX_SPEED) currentYSpeed = -ROTATE_MAX_SPEED;
-				if (currentXSpeed > ROTATE_MAX_SPEED) currentXSpeed = ROTATE_MAX_SPEED;
-				if (currentXSpeed < -ROTATE_MAX_SPEED) currentXSpeed = -ROTATE_MAX_SPEED;
-				mouseDown = false;
-			}
-		}
+	public void Rotate(float deltaX, float deltaY) {
+		targetYAngle += deltaX * MOUSE_X_SENSITIVITY;
+		targetXAngle += deltaY * MOUSE_Y_SENSITIVITY;
 		
-		if (Input.GetAxis("Mouse ScrollWheel") != 0) {
-			currentZSpeed += Input.GetAxis("Mouse ScrollWheel") * MOUSE_Z_MULTIPLIER;
-		}
+		if (targetXAngle > MAX_X_ANGLE) targetXAngle = MAX_X_ANGLE;
+		if (targetXAngle < MIN_X_ANGLE) targetXAngle = MIN_X_ANGLE;
 	}
 	
+	public void Zoom (float scroll) {
+		targetZDistance += scroll * MOUSE_Z_SENSITIVITY;
+		if (targetZDistance > MAX_DISTANCE) targetZDistance = MAX_DISTANCE;
+		if (targetZDistance < MIN_DISTANCE) targetZDistance = MIN_DISTANCE;
+	}
 	
 
     private void Update() {
@@ -174,7 +83,6 @@ public class SCR_Camera : MonoBehaviour {
 		
 		// Input command
 		HandleKey();
-		HandleMouse();
 		
 		// Chase center point
 		if (viewHome == true) {
@@ -182,53 +90,48 @@ public class SCR_Camera : MonoBehaviour {
 			centerTargetZ = SCR_Action.instance.homePlanet.transform.position.z;
 		}
         
-		float centerDistance = SCR_Helper.DistanceBetweenTwoPoint (centerX, centerZ, centerTargetX, centerTargetZ);
-		float centerAngle = SCR_Helper.AngleBetweenTwoPoint (centerX, centerZ, centerTargetX, centerTargetZ);
-		
-		float centerTargetSpeed = centerDistance * CENTER_SPEED_CAP_MULTIPLIER;
-		float centerAcceleration = CENTER_SPEED_ACCELERATION * dt;
-		if (centerTargetSpeed > centerSpeed + centerAcceleration) {
-			centerSpeed += centerAcceleration;
-		}
-		else if (centerTargetSpeed < centerSpeed - centerAcceleration) {
-			centerSpeed -= centerAcceleration;
-		}
-		else {
-			centerSpeed = centerTargetSpeed;
-		}
-		
+		float centerDistance 		= SCR_Helper.DistanceBetweenTwoPoint (centerX, centerZ, centerTargetX, centerTargetZ);
+		float centerAngle 			= SCR_Helper.AngleBetweenTwoPoint (centerX, centerZ, centerTargetX, centerTargetZ);
+		float centerTargetSpeed 	= centerDistance * MOVE_MULTIPLIER;
+		float centerAcceleration 	= MOVE_ACCELERATION * dt;
+		if (centerTargetSpeed > centerSpeed + centerAcceleration) 		centerSpeed += centerAcceleration;
+		else if (centerTargetSpeed < centerSpeed - centerAcceleration) 	centerSpeed -= centerAcceleration;
+		else															centerSpeed = centerTargetSpeed;
 		centerX += centerSpeed * SCR_Helper.Sin(centerAngle);
 		centerZ += centerSpeed * SCR_Helper.Cos(centerAngle);
 		
 		
 		// Movement around center point
-		currentYAngle += currentYSpeed * dt;
-		if (currentYAngle > 360) currentYAngle -= 360;
-		if (currentYAngle < 0) currentYAngle += 360;
+		float targetYSpeed = (targetYAngle - currentYAngle) * ROTATE_MULTIPLIER;
+		float rotateYAcceleration = ROTATE_ACCELERATION * dt;
+		if (targetYSpeed > rotateYSpeed + rotateYAcceleration) 			rotateYSpeed += rotateYAcceleration;
+		else if (targetYSpeed < rotateYSpeed - rotateYAcceleration) 	rotateYSpeed -= rotateYAcceleration;
+		else															rotateYSpeed = targetYSpeed;
+		currentYAngle += rotateYSpeed * dt;
 		
-		currentXAngle += currentXSpeed * dt;
-		if (currentXAngle < MIN_X_ANGLE) {
-			currentXAngle = MIN_X_ANGLE;
-			currentXSpeed = 0;
-		}
-		else if (currentXAngle > MAX_X_ANGLE) {
-			currentXAngle = MAX_X_ANGLE;
-			currentXSpeed = 0;
-		}
+		float targetXSpeed = (targetXAngle - currentXAngle) * ROTATE_MULTIPLIER;
+		float rotateXAcceleration = ROTATE_ACCELERATION * dt;
+		if (targetXSpeed > rotateXSpeed + rotateXAcceleration) 			rotateXSpeed += rotateXAcceleration;
+		else if (targetXSpeed < rotateXSpeed - rotateXAcceleration) 	rotateXSpeed -= rotateXAcceleration;
+		else															rotateXSpeed = targetXSpeed;
+		currentXAngle += rotateXSpeed * dt;
 		
-		currentDistance += currentZSpeed * dt;
-		if (currentDistance < MIN_DISTANCE) {
-			currentDistance = MIN_DISTANCE;
-			currentZSpeed = 0;
-		}
-		else if (currentDistance > MAX_DISTANCE) {
-			currentDistance = MAX_DISTANCE;
-			currentZSpeed = 0;
-		}
+		
+		// Get near to the center point
+		float targetZSpeed = (targetZDistance - currentZDistance) * DISTANCE_MULTIPLIER;
+		float distanceZAcceleration = DISTANCE_ACCELERATION * dt;
+		
+		if (targetZSpeed > distanceZSpeed + distanceZAcceleration) 		distanceZSpeed += distanceZAcceleration;
+		else if (targetZSpeed < distanceZSpeed - distanceZAcceleration) distanceZSpeed -= distanceZAcceleration;
+		else															distanceZSpeed = targetZSpeed;
+		currentZDistance += distanceZSpeed * dt;
+		
+		
+		
 		
 		// Apply actual transformation
-		float flatDistance = SCR_Helper.Cos(currentXAngle) * currentDistance;
-		float y = SCR_Helper.Sin(currentXAngle) * currentDistance;
+		float flatDistance = SCR_Helper.Cos(currentXAngle) * currentZDistance;
+		float y = SCR_Helper.Sin(currentXAngle) * currentZDistance;
 		float x = SCR_Helper.Sin(currentYAngle) * flatDistance + centerX;
 		float z = SCR_Helper.Cos(currentYAngle) * flatDistance + centerZ;
 		

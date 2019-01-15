@@ -208,21 +208,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02de9eedb90ca92419c0f22e4ba346ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ROTATE_ACCELERATION: 500
-  ROTATE_DECELERATION: 240
-  ROTATE_MAX_SPEED: 150
-  MOVE_ACCELERATION: 800
-  MOVE_DECELERATION: 1000
-  MOVE_MAX_SPEED: 1000
-  MIN_DISTANCE: 22
+  ROTATE_ACCELERATION: 10000
+  ROTATE_MULTIPLIER: 5
+  DISTANCE_ACCELERATION: 10000
+  DISTANCE_MULTIPLIER: 5
+  MOVE_ACCELERATION: 500
+  MOVE_MULTIPLIER: 0.1
+  MIN_DISTANCE: 30
   MAX_DISTANCE: 1200
   MIN_X_ANGLE: 0
   MAX_X_ANGLE: 60
-  CENTER_SPEED_ACCELERATION: 150
-  CENTER_SPEED_CAP_MULTIPLIER: 0.05
-  MOUSE_X_MULTIPLIER: 0.2
-  MOUSE_Y_MULTIPLIER: -0.1
-  MOUSE_Z_MULTIPLIER: -1000
+  PICK_CAM_OFFSET: 200
+  MOUSE_X_SENSITIVITY: 0.5
+  MOUSE_Y_SENSITIVITY: -0.5
+  MOUSE_Z_SENSITIVITY: -500
 --- !u!114 &534669907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -338,8 +337,8 @@ MonoBehaviour:
   NUMBER_OF_PLANET_TEMPLATE: 17
   NUMBER_OF_PLANET_CREATE: 8
   ORBIT_DISTANCE_MIN: 50
-  ORBIT_DISTANCE_MAX: 150
-  GRAVITY_CONSTANT: 0.000001
+  ORBIT_DISTANCE_MAX: 75
+  GRAVITY_CONSTANT: 0.00001
 --- !u!4 &996837467
 Transform:
   m_ObjectHideFlags: 0
@@ -471,6 +470,8 @@ MonoBehaviour:
   - {fileID: 8777763535850294346, guid: ba026e64f09cbcc468a77f327dad88f3, type: 3}
   sun: {fileID: 2037621485}
   planets: []
+  homePlanet: {fileID: 0}
+  gameState: 0
 --- !u!4 &2112755766
 Transform:
   m_ObjectHideFlags: 0
@@ -765,7 +766,7 @@ PrefabInstance:
     - target: {fileID: 6839402033065271624, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
       propertyPath: InitialModule.startLifetime.scalar
-      value: 10
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 6839402033065271624, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
@@ -785,7 +786,7 @@ PrefabInstance:
     - target: {fileID: 6839402033065271624, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
       propertyPath: EmissionModule.rateOverTime.scalar
-      value: 20
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 6839402033065271624, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
@@ -965,7 +966,7 @@ PrefabInstance:
     - target: {fileID: 6839402033239306167, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
       propertyPath: InitialModule.startLifetime.scalar
-      value: 20
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 6839402033239306167, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
@@ -990,12 +991,17 @@ PrefabInstance:
     - target: {fileID: 6839402033239306167, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
       propertyPath: EmissionModule.rateOverTime.scalar
-      value: 10
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 6839402033239306167, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}
       propertyPath: InitialModule.startLifetime.minScalar
-      value: 10
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6839402033239306167, guid: 5c02629a1acbd1749a592db3d27e0b6f,
+        type: 3}
+      propertyPath: InitialModule.startSpeed.scalar
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6839402033239306168, guid: 5c02629a1acbd1749a592db3d27e0b6f,
         type: 3}

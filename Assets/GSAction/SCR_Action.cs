@@ -4,17 +4,29 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SCR_Action : MonoBehaviour {
+	// Instance
 	public static SCR_Action instance;
-	
+	// Prefab
 	public GameObject[] 	PFB_Planet;
-
+	// Object
 	public GameObject 		sun;
 	public GameObject[] 	planets;
+	public GameObject 		homePlanet;
+	
+	// Public shit
+	public GameState		gameState;
+	
+	// Private shit
+	private SCR_Camera cameraScript		= null;
+	private bool  mouseDown				= false;
+	private float mouseDownX			= 0;
+	private float mouseDownY			= 0;
 	
 	
-	public GameObject homePlanet;
 	
 	
+	
+	// Init
     private void Start() {
 		if (SCR_Loading.firstTimeRun) {
 			SCR_Loading.LoadScene ("GSMenu/SCN_Menu");
@@ -22,26 +34,82 @@ public class SCR_Action : MonoBehaviour {
 		}
 		
 		instance = this;
-        
-		
-		// TEST
-		//homePlanet = planets[4];
+		gameState = GameState.INIT;
+		cameraScript = Camera.main.GetComponent<SCR_Camera>();
     }
 	
-	public void CreatePlanet (int[] planetID, int[] planetDistance, int[] planetAngle, int[] planetSpeed) {
-		planets = new GameObject[planetID.Length];
-		for (int i=0; i<planetID.Length; i++) {
-			Debug.Log(planetID[i]);
-			planets[i] = Instantiate(PFB_Planet[planetID[i]]);
-			planets[i].GetComponent<SCR_Planet>().Init (planetDistance[i], planetAngle[i], planetSpeed[i]);
-		}
-	}
-	
+	// Update
     private void Update() {
 		float dt = Time.deltaTime;
+		
+		// Handle mouse
         float touchX = Input.mousePosition.x;
 		float touchY = Input.mousePosition.y;
-		
-		
+		// Mouse drag
+		if (Input.GetMouseButton(0)) {
+			if (mouseDown == false) {
+				mouseDown = true;
+				mouseDownX = Input.mousePosition.x;
+				mouseDownY = Input.mousePosition.y;
+			}
+			else {
+				float deltaX = Input.mousePosition.x - mouseDownX;
+				float deltaY = Input.mousePosition.y - mouseDownY;
+				mouseDownX = Input.mousePosition.x;
+				mouseDownY = Input.mousePosition.y;
+				
+				cameraScript.Rotate (deltaX, deltaY);
+			}
+		}
+		else {
+			if (mouseDown) {
+				mouseDown = false;
+			}
+		}
+		// Mouse wheell
+		if (Input.GetAxis("Mouse ScrollWheel") != 0) {
+			cameraScript.Zoom (Input.GetAxis("Mouse ScrollWheel"));
+		}
     }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// ==============================================================================================================================
+	// Client / server shit
+	public void CreatePlanet (int[] planetID, int[] planetSize, float[] planetDistance, float[] planetAngle, float[] planetSpeed) {
+		// Create all planet objects based on server instruction
+		planets = new GameObject[planetID.Length];
+		for (int i=0; i<planetID.Length; i++) {
+			planets[i] = Instantiate(PFB_Planet[planetID[i]]);
+			planets[i].GetComponent<SCR_Planet>().Init (planetSize[i], planetDistance[i], planetAngle[i], planetSpeed[i]);
+		}
+		
+		// TEST
+		homePlanet = planets[4];
+	}
+	
+	public void UpdatePlanet (float[] planetAngle) {
+		// Update all planet position based on server instruction
+		for (int i=0; i<planets.Length; i++) {
+			planets[i].GetComponent<SCR_Planet>().UpdateAngle (planetAngle[i]);
+		}
+	}
+	// ==============================================================================================================================
 }
