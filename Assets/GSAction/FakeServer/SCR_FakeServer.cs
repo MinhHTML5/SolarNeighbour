@@ -9,7 +9,7 @@ public class SCR_FakeServer : MonoBehaviour {
 	public static SCR_FakeServer 	instance;
 	
 	public int				SUN_MASS				 	= 1000000000;
-	public int				NUMBER_OF_PLANET_TEMPLATE 	= 17;
+	public int				NUMBER_OF_PLANET_TEMPLATE 	= 20;
 	public int				NUMBER_OF_PLANET_CREATE		= 8;
 	public float			ORBIT_DISTANCE_MIN			= 50;
 	public float			ORBIT_DISTANCE_MAX			= 75;
