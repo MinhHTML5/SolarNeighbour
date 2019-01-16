@@ -101,8 +101,11 @@ public class SCR_Action : MonoBehaviour {
 			planets[i].GetComponent<SCR_Planet>().Init (planetSize[i], planetDistance[i], planetAngle[i], planetSpeed[i]);
 		}
 		
+		gameState = GameState.CHOOSE_PLANET;
+		cameraScript.PickPlanet();
+		
 		// TEST
-		homePlanet = planets[4];
+		//homePlanet = planets[4];
 	}
 	
 	public void UpdatePlanet (float[] planetAngle) {

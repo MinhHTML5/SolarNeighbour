@@ -58,14 +58,17 @@ public class SCR_Planet : MonoBehaviour {
     private void Update() {
         float dt = Time.deltaTime;
 		
-		rotation += rotateSpeed * dt;
-		if (rotation > 360) rotation -= 360;
-		else if (rotation < 0) rotation += 360;
-		gameObject.transform.localEulerAngles = new Vector3(0, rotation, 0);
+		if (SCR_Action.instance.gameState == GameState.ACTION) {
+			rotation += rotateSpeed * dt;
+			if (rotation > 360) rotation -= 360;
+			else if (rotation < 0) rotation += 360;
 		
-		angle += speed * dt;
-		if (angle > 360) angle -= 360;
-		else if (angle < 0) angle += 360;
+			angle += speed * dt;
+			if (angle > 360) angle -= 360;
+			else if (angle < 0) angle += 360;
+		}
+		
+		gameObject.transform.localEulerAngles = new Vector3(0, rotation, 0);
 		gameObject.transform.position = new Vector3(distance * SCR_Helper.Sin(angle), 0, distance * SCR_Helper.Cos(angle));
     }
 }

@@ -5,7 +5,8 @@ using UnityEngine;
 
 
 public class SCR_FakeServer : MonoBehaviour {
-	public static bool 		useFakeServer;
+	public static bool 				useFakeServer;
+	public static SCR_FakeServer 	instance;
 	
 	public int				SUN_MASS				 	= 1000000000;
 	public int				NUMBER_OF_PLANET_TEMPLATE 	= 17;
@@ -21,20 +22,78 @@ public class SCR_FakeServer : MonoBehaviour {
 	
 	
 	
-	
+	private void Awake() {
+		// Whenever this script is enabled, switch to fake mode
+		useFakeServer = true;
+	}
 	
     private void Start() {
 		if (SCR_Loading.firstTimeRun) {
 			return;
 		}
 		
-		// Whenever this script is enabled, switch to fake mode
-		useFakeServer = true;
-		
-		// First state
-        gameState = GameState.INIT;
+		instance = this;
+        gameState = GameState.IDLE;
 		packet = new byte[0];
+    }
+	
+	
+
+    private void FixedUpdate() {
+		if (SCR_Loading.firstTimeRun) {
+			return;
+		}
 		
+		float dt = Time.fixedDeltaTime;
+		
+		// Update planets movement
+		if (gameState == GameState.ACTION) {
+			for (int i=0; i<planet.Length; i++) {
+				planet[i].FixedUpdate (dt);
+			}
+			
+			AppendCommand (System.BitConverter.GetBytes((int)Command.SERVER_UPDATE_PLANET));
+			for (int i=0; i<planet.Length; i++) {
+				AppendCommand (System.BitConverter.GetBytes(planet[i].angle));
+			}
+		}
+		
+		// Send packet
+        if (packet.Length > 0) {
+			SCR_Client.instance.OnDataReceive (packet);
+			packet = new byte[0];
+		}
+    }
+	
+	
+	private void AppendCommand (byte[] data) {
+		int originalLength = packet.Length;
+		System.Array.Resize<byte>(ref packet, packet.Length + data.Length);
+		System.Array.Copy(data, 0, packet, originalLength, data.Length);
+	}
+	
+	
+	
+	public void OnDataReceive(byte[] data) {
+		int readIndex = 0;
+		int commandID = 0;
+		
+		while (readIndex < data.Length) {
+			commandID = System.BitConverter.ToInt32(data, readIndex);
+			if (commandID == (int)Command.CLIENT_READY) {
+				CreatePlanet();
+				readIndex += 4;
+			}
+			else {
+				// Just to avoid loop
+				// Shouldn't go here
+				readIndex ++;
+			}
+		}
+	}
+	
+	
+	private void CreatePlanet () {
 		// Randomly create a list of planet
 		List<int> planetsToPickFrom = new List<int>();
 		for (int i=0; i<NUMBER_OF_PLANET_TEMPLATE; i++) {
@@ -46,10 +105,10 @@ public class SCR_FakeServer : MonoBehaviour {
 		List<int> planetSizesToChoose = new List<int>();
 		planetSizesToChoose.Add(1);
 		planetSizesToChoose.Add(1);
-		planetSizesToChoose.Add(1);
 		planetSizesToChoose.Add(2);
 		planetSizesToChoose.Add(2);
 		planetSizesToChoose.Add(2);
+		planetSizesToChoose.Add(3);
 		planetSizesToChoose.Add(3);
 		planetSizesToChoose.Add(3);
 		
@@ -78,7 +137,7 @@ public class SCR_FakeServer : MonoBehaviour {
 		}
 		
 		// Send a command to client
-		AppendCommand (System.BitConverter.GetBytes((int)Command.CREATE_PLANET));
+		AppendCommand (System.BitConverter.GetBytes((int)Command.SERVER_CREATE_PLANET));
 		AppendCommand (System.BitConverter.GetBytes(NUMBER_OF_PLANET_CREATE));
 		for (int i=0; i<NUMBER_OF_PLANET_CREATE; i++) {
 			AppendCommand (System.BitConverter.GetBytes(planet[i].id));
@@ -87,44 +146,5 @@ public class SCR_FakeServer : MonoBehaviour {
 			AppendCommand (System.BitConverter.GetBytes(planet[i].angle));
 			AppendCommand (System.BitConverter.GetBytes(planet[i].speed));
 		}
-    }
-	
-	
-
-    private void FixedUpdate() {
-		if (SCR_Loading.firstTimeRun) {
-			return;
-		}
-		
-		float dt = Time.fixedDeltaTime;
-		
-		// Update planets movement
-		for (int i=0; i<NUMBER_OF_PLANET_CREATE; i++) {
-			planet[i].FixedUpdate (dt);
-		}
-		
-		AppendCommand (System.BitConverter.GetBytes((int)Command.UPDATE_PLANET));
-		for (int i=0; i<NUMBER_OF_PLANET_CREATE; i++) {
-			AppendCommand (System.BitConverter.GetBytes(planet[i].angle));
-		}
-		
-		
-		
-		// Send packet
-        if (packet.Length > 0) {
-			SCR_Client.instance.OnDataReceive (packet);
-			packet = new byte[0];
-		}
-    }
-	
-	
-	
-	
-	
-	
-	private void AppendCommand(byte[] data) {
-		int originalLength = packet.Length;
-		System.Array.Resize<byte>(ref packet, packet.Length + data.Length);
-		System.Array.Copy(data, 0, packet, originalLength, data.Length);
 	}
 }

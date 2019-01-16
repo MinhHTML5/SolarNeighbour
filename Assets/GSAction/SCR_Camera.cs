@@ -16,6 +16,8 @@ public class SCR_Camera : MonoBehaviour {
 	public float MIN_X_ANGLE;
 	public float MAX_X_ANGLE;
 	
+	public float OFFSET_AMOUNT;
+	
 	public float MOUSE_X_SENSITIVITY;
 	public float MOUSE_Y_SENSITIVITY;
 	public float MOUSE_Z_SENSITIVITY;
@@ -31,58 +33,27 @@ public class SCR_Camera : MonoBehaviour {
 	private float rotateXSpeed			= 0;
 	private float rotateYSpeed			= 0;
 	private float distanceZSpeed		= 0;
+	private float offsetSpeed			= 0;
 	
 	private float currentXAngle			= 30;
 	private float currentYAngle			= 0;
 	private float currentZDistance		= 200;
+	private float currentOffset			= 0;
 	
 	private float targetXAngle			= 30;
 	private float targetYAngle			= 0;
 	private float targetZDistance		= 200;
+	private float targetOffset			= 0;
 	
-	private bool  mouseDown				= false;
-	private float mouseDownX			= 0;
-	private float mouseDownY			= 0;
 	
-    private void Start() {
-        
-    }
-	
-	private void HandleKey() {
-		if (Input.GetKeyDown(KeyCode.V)) {
-			if (viewHome == false) {
-				viewHome = true;
-				centerTargetX = SCR_Action.instance.homePlanet.transform.position.x;
-				centerTargetZ = SCR_Action.instance.homePlanet.transform.position.z;
-			}
-			else {
-				viewHome = false;
-				centerTargetX = 0;
-				centerTargetZ = 0;
-			}
-		}
-	}
-	
-	public void Rotate(float deltaX, float deltaY) {
-		targetYAngle += deltaX * MOUSE_X_SENSITIVITY;
-		targetXAngle += deltaY * MOUSE_Y_SENSITIVITY;
-		
-		if (targetXAngle > MAX_X_ANGLE) targetXAngle = MAX_X_ANGLE;
-		if (targetXAngle < MIN_X_ANGLE) targetXAngle = MIN_X_ANGLE;
-	}
-	
-	public void Zoom (float scroll) {
-		targetZDistance += scroll * MOUSE_Z_SENSITIVITY;
-		if (targetZDistance > MAX_DISTANCE) targetZDistance = MAX_DISTANCE;
-		if (targetZDistance < MIN_DISTANCE) targetZDistance = MIN_DISTANCE;
-	}
 	
 
+
+	private void Start() {
+        
+    }
     private void Update() {
 		float dt = Time.deltaTime;
-		
-		// Input command
-		HandleKey();
 		
 		// Chase center point
 		if (viewHome == true) {
@@ -127,16 +98,62 @@ public class SCR_Camera : MonoBehaviour {
 		currentZDistance += distanceZSpeed * dt;
 		
 		
+		// Move offset
+		float targetOSpeed = (targetOffset - currentOffset) * DISTANCE_MULTIPLIER;
+		float offsetAcceleration = DISTANCE_ACCELERATION * dt;
+		if (targetOSpeed > offsetSpeed + offsetAcceleration) 			offsetSpeed += offsetAcceleration;
+		else if (targetOSpeed < offsetSpeed - offsetAcceleration) 		offsetSpeed -= offsetAcceleration;
+		else															offsetSpeed = targetOSpeed;
+		currentOffset += offsetSpeed * dt;
+		
+		
 		
 		
 		// Apply actual transformation
 		float flatDistance = SCR_Helper.Cos(currentXAngle) * currentZDistance;
 		float y = SCR_Helper.Sin(currentXAngle) * currentZDistance;
-		float x = SCR_Helper.Sin(currentYAngle) * flatDistance + centerX;
-		float z = SCR_Helper.Cos(currentYAngle) * flatDistance + centerZ;
+		float x = SCR_Helper.Sin(currentYAngle) * flatDistance + centerX + SCR_Helper.Sin(currentYAngle - 90) * currentOffset;
+		float z = SCR_Helper.Cos(currentYAngle) * flatDistance + centerZ + SCR_Helper.Cos(currentYAngle - 90) * currentOffset;
 		
 		gameObject.transform.position = new Vector3(x, y, z);
 		gameObject.transform.localEulerAngles = new Vector3(currentXAngle, currentYAngle + 180, 0);
     }
+	
+	
+	
+	
+	
+	public void ViewHome() {
+		if (SCR_Action.instance.homePlanet) {
+			viewHome = true;
+			centerTargetX = SCR_Action.instance.homePlanet.transform.position.x;
+			centerTargetZ = SCR_Action.instance.homePlanet.transform.position.z;
+		}
+	}
+	public void ViewSun() {
+		viewHome = false;
+		centerTargetX = 0;
+		centerTargetZ = 0;
+		targetOffset = 0;
+	}
+	public void PickPlanet() {
+		targetOffset = OFFSET_AMOUNT;
+		targetXAngle = MAX_X_ANGLE;
+		targetZDistance = MAX_DISTANCE;
+	}
+
+	public void Rotate(float deltaX, float deltaY) {
+		targetYAngle += deltaX * MOUSE_X_SENSITIVITY;
+		targetXAngle += deltaY * MOUSE_Y_SENSITIVITY;
+		
+		if (targetXAngle > MAX_X_ANGLE) targetXAngle = MAX_X_ANGLE;
+		if (targetXAngle < MIN_X_ANGLE) targetXAngle = MIN_X_ANGLE;
+	}
+	
+	public void Zoom (float scroll) {
+		targetZDistance += scroll * MOUSE_Z_SENSITIVITY;
+		if (targetZDistance > MAX_DISTANCE) targetZDistance = MAX_DISTANCE;
+		if (targetZDistance < MIN_DISTANCE) targetZDistance = MIN_DISTANCE;
+	}
 }
 
