@@ -9,6 +9,7 @@ public class SCR_Planet : MonoBehaviour {
 	public float ROTATION_SPEED_MAX = 1.5f;
 	
 	public Material orbitMaterial;
+	public Material orbitMaterialHighlight;
 	
 	public float mass;
 	public float distance;
@@ -71,4 +72,14 @@ public class SCR_Planet : MonoBehaviour {
 		gameObject.transform.localEulerAngles = new Vector3(0, rotation, 0);
 		gameObject.transform.position = new Vector3(distance * SCR_Helper.Sin(angle), 0, distance * SCR_Helper.Cos(angle));
     }
+	
+	
+	public void HighlightOrbit(bool highlight) {
+		if (highlight) {
+			orbitLine.material = orbitMaterialHighlight;
+		}
+		else {
+			orbitLine.material = orbitMaterial;
+		}
+	}
 }

@@ -171,6 +171,8 @@ MonoBehaviour:
   ROTATION_SPEED_MIN: -1.5
   ROTATION_SPEED_MAX: 1.5
   orbitMaterial: {fileID: 2100000, guid: 3d4ca1330f196ec44adcbc9371de7b22, type: 2}
+  orbitMaterialHighlight: {fileID: 2100000, guid: 385c4e533a3fa0445b6fcfc1aab44050,
+    type: 2}
   mass: 0
   distance: 0
   angle: 0

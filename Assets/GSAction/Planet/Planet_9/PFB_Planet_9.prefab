@@ -168,10 +168,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b965404f2da73df41a5f35e7aef55530, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MASS: 3000
-  ROTATION_SPEED: 1.2
+  ROTATION_SPEED_MIN: -1.5
+  ROTATION_SPEED_MAX: 1.5
   orbitMaterial: {fileID: 2100000, guid: 3d4ca1330f196ec44adcbc9371de7b22, type: 2}
+  orbitMaterialHighlight: {fileID: 2100000, guid: 385c4e533a3fa0445b6fcfc1aab44050,
+    type: 2}
+  mass: 0
   distance: 0
-  orbitalSpeed: 0
   angle: 0
-  angularSpeed: 0
+  speed: 0

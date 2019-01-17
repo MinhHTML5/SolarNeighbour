@@ -13,6 +13,8 @@ public class SCR_Action : MonoBehaviour {
 	public GameObject[] 	planets;
 	public GameObject 		homePlanet;
 	
+	public SCR_PickPlanet	uiPickPlanetScript;
+	
 	// Public shit
 	public GameState		gameState;
 	
@@ -103,6 +105,8 @@ public class SCR_Action : MonoBehaviour {
 		
 		gameState = GameState.CHOOSE_PLANET;
 		cameraScript.PickPlanet();
+		
+		uiPickPlanetScript.CreatePlanetEntries (planetID, planetSize, planetDistance);
 		
 		// TEST
 		//homePlanet = planets[4];
