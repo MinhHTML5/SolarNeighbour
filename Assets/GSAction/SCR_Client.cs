@@ -63,6 +63,12 @@ public class SCR_Client : MonoBehaviour {
 	
 	
 	
+	public void ChoosePlanet() {
+		
+	}
+	
+	
+	
 	public void OnDataReceive(byte[] data) {
 		int readIndex = 0;
 		int commandID = 0;

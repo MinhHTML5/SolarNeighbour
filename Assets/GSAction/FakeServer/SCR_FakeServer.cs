@@ -19,6 +19,7 @@ public class SCR_FakeServer : MonoBehaviour {
 	private FakePlanet[]	planet;
 	
 	private byte[]			packet;
+	private float			pickTimeOut					= 16.0f;
 	
 	
 	
@@ -47,7 +48,10 @@ public class SCR_FakeServer : MonoBehaviour {
 		float dt = Time.fixedDeltaTime;
 		
 		// Update planets movement
-		if (gameState == GameState.ACTION) {
+		if (gameState == GameState.CHOOSE_PLANET) {
+			pickTimeOut -= dt;
+		}
+		else if (gameState == GameState.ACTION) {
 			for (int i=0; i<planet.Length; i++) {
 				planet[i].FixedUpdate (dt);
 			}

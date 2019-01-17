@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+using DG.Tweening;
+
 public class SCR_PickPlanet : MonoBehaviour {
 	public GameObject PFB_PickPlanetEntry;
 	public GameObject[] pickPlanetEntries;
@@ -23,7 +25,7 @@ public class SCR_PickPlanet : MonoBehaviour {
 		SCR_Action.instance.planets[index].GetComponent<SCR_Planet>().HighlightOrbit(true);
 	}
 	public void ConfirmPlanet (int index) {
-		
+		GetComponent<RectTransform>().DOAnchorPosX (500, 0.5f, true);
 	}
 	
 	public void CreatePlanetEntries (int[] planetID, int[] planetSize, float[] planetDistance) {
@@ -36,7 +38,8 @@ public class SCR_PickPlanet : MonoBehaviour {
 			pickPlanetEntries[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(15, 420 - i * 120);
 			pickPlanetEntries[i].GetComponent<SCR_PickPlanetEntry>().SetPlanetInfo (i, planetID[i], planetSize[i], planetDistance[i]);
 			pickPlanetEntries[i].GetComponent<SCR_PickPlanetEntry>().pickPlanetScript = this;
-			
 		}
+		
+		GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
 	}
 }
