@@ -8,6 +8,8 @@ public class SCR_FakeServer : MonoBehaviour {
 	public static bool 				useFakeServer;
 	public static SCR_FakeServer 	instance;
 	
+	public GameObject		PFB_FakeAI;
+	
 	public int				SUN_MASS				 	= 1000000000;
 	public int				NUMBER_OF_PLANET_TEMPLATE 	= 20;
 	public int				NUMBER_OF_PLANET_CREATE		= 8;
@@ -16,10 +18,17 @@ public class SCR_FakeServer : MonoBehaviour {
 	public float			GRAVITY_CONSTANT 			= 0.000001f;
 	
 	private GameState 		gameState;
+	private GameObject[]	fakeAIObject;
+	private SCR_FakeAI[]	fakeAI;
 	private FakePlanet[]	planet;
 	
-	private byte[]			packet;
+	private byte[]			broadcastPacket;
+	private byte[]			privatePacket_1;
+	private byte[]			privatePacket_2;
+	private byte[]			privatePacket_3;
+	private byte[]			privatePacket_4;
 	private float			pickTimeOut					= 16.0f;
+	private bool[]			playerReady					= new bool [4];
 	
 	
 	
@@ -29,64 +38,180 @@ public class SCR_FakeServer : MonoBehaviour {
 	}
 	
     private void Start() {
+		// Block run if GS_Action is start first
 		if (SCR_Loading.firstTimeRun) {
 			return;
 		}
 		
+		// Init everything
 		instance = this;
-        gameState = GameState.IDLE;
-		packet = new byte[0];
+        gameState = GameState.INIT;
+		for (int i=0; i<4; i++) {
+			playerReady[i] = false;
+		}
+		broadcastPacket = new byte[0];
+		privatePacket_1 = new byte[0];
+		privatePacket_2 = new byte[0];
+		privatePacket_3 = new byte[0];
+		privatePacket_4 = new byte[0];
+		
+		// Create 3 fake AI, who will send message like a real human opponent
+		// Their intelligence is doubtly good.
+		fakeAI = new SCR_FakeAI[3];
+		fakeAIObject = new GameObject[3];
+		for (int i=0; i<3; i++) {
+			fakeAIObject[i] = Instantiate (PFB_FakeAI);
+			fakeAIObject[i].transform.SetParent (transform);
+			fakeAI[i] = fakeAIObject[i].GetComponent<SCR_FakeAI>();
+			fakeAI[i].Init (i + 1);
+		}
     }
 	
+	private void AppendBroadcastCommand (byte[] data) {
+		// Add message to the broadcast buffer
+		// This buffer will be broadcasted at the end of a loop
+		int originalLength = broadcastPacket.Length;
+		System.Array.Resize<byte>(ref broadcastPacket, broadcastPacket.Length + data.Length);
+		System.Array.Copy(data, 0, broadcastPacket, originalLength, data.Length);
+	}
 	
+	private void AppendPrivateMessage (byte[] data, int playerID) {
+		// PM a player. Send at the end of a loop also
+		// This chunk of code is a little stupid, should have used a 2 dimension array, but fuck it
+		if (playerID == 0) {
+			int originalLength = privatePacket_1.Length;
+			System.Array.Resize<byte>(ref privatePacket_1, privatePacket_1.Length + data.Length);
+			System.Array.Copy(data, 0, privatePacket_1, originalLength, data.Length);
+		}
+		else if (playerID == 1) {
+			int originalLength = privatePacket_2.Length;
+			System.Array.Resize<byte>(ref privatePacket_2, privatePacket_2.Length + data.Length);
+			System.Array.Copy(data, 0, privatePacket_2, originalLength, data.Length);
+		}
+		else if (playerID == 2) {
+			int originalLength = privatePacket_3.Length;
+			System.Array.Resize<byte>(ref privatePacket_3, privatePacket_3.Length + data.Length);
+			System.Array.Copy(data, 0, privatePacket_3, originalLength, data.Length);
+		}
+		else if (playerID == 3) {
+			int originalLength = privatePacket_4.Length;
+			System.Array.Resize<byte>(ref privatePacket_4, privatePacket_4.Length + data.Length);
+			System.Array.Copy(data, 0, privatePacket_4, originalLength, data.Length);
+		}
+	}
+
+
+
+
+
 
     private void FixedUpdate() {
+		// Block run if GS_Action is start first
 		if (SCR_Loading.firstTimeRun) {
 			return;
 		}
+
+
+
 		
 		float dt = Time.fixedDeltaTime;
-		
-		// Update planets movement
-		if (gameState == GameState.CHOOSE_PLANET) {
+		if (gameState == GameState.INIT) {
+			// Wait for ready command from client
+		}
+		else if (gameState == GameState.CHOOSE_PLANET) {
 			pickTimeOut -= dt;
 		}
 		else if (gameState == GameState.ACTION) {
+			// Update planets movement
 			for (int i=0; i<planet.Length; i++) {
 				planet[i].FixedUpdate (dt);
 			}
-			
-			AppendCommand (System.BitConverter.GetBytes((int)Command.SERVER_UPDATE_PLANET));
+			// Propagate planet info
+			AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_UPDATE_PLANET));
 			for (int i=0; i<planet.Length; i++) {
-				AppendCommand (System.BitConverter.GetBytes(planet[i].angle));
+				AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].angle));
 			}
 		}
 		
-		// Send packet
-        if (packet.Length > 0) {
-			SCR_Client.instance.OnDataReceive (packet);
-			packet = new byte[0];
+		// Send broadcast packet
+        if (broadcastPacket.Length > 0) {
+			SCR_Client.instance.OnDataReceive (broadcastPacket);
+			broadcastPacket = new byte[0];
+		}
+		
+		// Send PM packet
+		if (privatePacket_1.Length > 0) {
+			SCR_Client.instance.OnDataReceive (privatePacket_1);
+			privatePacket_1 = new byte[0];
+		}
+		if (privatePacket_2.Length > 0) {
+			fakeAI[0].OnDataReceive (privatePacket_2);
+			privatePacket_2 = new byte[0];
+		}
+		if (privatePacket_3.Length > 0) {
+			fakeAI[1].OnDataReceive (privatePacket_3);
+			privatePacket_3 = new byte[0];
+		}
+		if (privatePacket_4.Length > 0) {
+			fakeAI[2].OnDataReceive (privatePacket_4);
+			privatePacket_4 = new byte[0];
 		}
     }
 	
 	
-	private void AppendCommand (byte[] data) {
-		int originalLength = packet.Length;
-		System.Array.Resize<byte>(ref packet, packet.Length + data.Length);
-		System.Array.Copy(data, 0, packet, originalLength, data.Length);
-	}
 	
 	
 	
-	public void OnDataReceive(byte[] data) {
+	
+	
+	
+	
+	
+	
+	
+	public void OnDataReceive(byte[] data, int playerID) {
+		// playerID in a real server will get from socket index in socket array
+		
+		
 		int readIndex = 0;
 		int commandID = 0;
 		
 		while (readIndex < data.Length) {
 			commandID = System.BitConverter.ToInt32(data, readIndex);
 			if (commandID == (int)Command.CLIENT_READY) {
-				CreatePlanet();
+				if (gameState == GameState.INIT) {
+					// Player send ready command, mark them as ready
+					playerReady[playerID] = true;
+					
+					// Send them their playerID so they know who they are
+					AppendPrivateMessage (System.BitConverter.GetBytes((int)Command.SERVER_PROVIDE_ID), playerID);
+					AppendPrivateMessage (System.BitConverter.GetBytes(playerID), playerID);
+					
+					// If all 4 player are ready, we create the planets and start the game
+					if (playerReady[0] && playerReady[1] && playerReady[2] && playerReady[3]) {
+						CreatePlanet();
+					}
+				}
 				readIndex += 4;
+			}
+			else if (commandID == (int)Command.CLIENT_PICK_PLANET) {
+				if (gameState == GameState.CHOOSE_PLANET) {
+					// Player pick a planet
+					int planetID = commandID = System.BitConverter.ToInt32(data, readIndex + 1 * 4);
+					
+					// Check if the planet is picked
+					if (planet[planetID].playerID == -1) {
+						// If not, let the player pick it, broadcast to others
+						planet[planetID].playerID = playerID;
+						AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_PROVIDE_PLANET));
+						AppendBroadcastCommand (System.BitConverter.GetBytes(playerID));
+						AppendBroadcastCommand (System.BitConverter.GetBytes(planetID));
+					}
+					else {
+						// If planet is picked, just ignore
+					}
+				}
+				readIndex += 2 * 4;
 			}
 			else {
 				// Just to avoid loop
@@ -95,6 +220,17 @@ public class SCR_FakeServer : MonoBehaviour {
 			}
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	private void CreatePlanet () {
@@ -141,14 +277,17 @@ public class SCR_FakeServer : MonoBehaviour {
 		}
 		
 		// Send a command to client
-		AppendCommand (System.BitConverter.GetBytes((int)Command.SERVER_CREATE_PLANET));
-		AppendCommand (System.BitConverter.GetBytes(NUMBER_OF_PLANET_CREATE));
+		AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_CREATE_PLANET));
+		AppendBroadcastCommand (System.BitConverter.GetBytes(NUMBER_OF_PLANET_CREATE));
 		for (int i=0; i<NUMBER_OF_PLANET_CREATE; i++) {
-			AppendCommand (System.BitConverter.GetBytes(planet[i].id));
-			AppendCommand (System.BitConverter.GetBytes(planet[i].size));
-			AppendCommand (System.BitConverter.GetBytes(planet[i].distance));
-			AppendCommand (System.BitConverter.GetBytes(planet[i].angle));
-			AppendCommand (System.BitConverter.GetBytes(planet[i].speed));
+			AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].id));
+			AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].size));
+			AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].distance));
+			AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].angle));
+			AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].speed));
 		}
+		
+		// Switch state
+		gameState = GameState.CHOOSE_PLANET;
 	}
 }

@@ -11,16 +11,18 @@ public class FakePlanet {
     public float 	distance;
 	public float 	angle;
 	public float 	speed;
+	public float 	playerID;
 	
 	public float 	x;
 	public float 	z;
 	
 	public FakePlanet (int pID, int pSize, float pDistance, float pAngle, float pSpeed) {
-		id = pID;
-		size = pSize;
-		distance = pDistance;
-		angle = pAngle;
-		speed = pSpeed;
+		id 			= pID;
+		size 		= pSize;
+		distance 	= pDistance;
+		angle 		= pAngle;
+		speed 		= pSpeed;
+		playerID 	= -1;
 		
 		x = SCR_Helper.Sin(angle) * distance;
 		z = SCR_Helper.Cos(angle) * distance;

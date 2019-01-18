@@ -7,8 +7,7 @@ using UnityEngine;
 
 
 public enum GameState {
-	IDLE = 0,
-	INIT,
+	INIT = 0,
 	CHOOSE_PLANET,
 	ACTION
 }
@@ -17,16 +16,19 @@ public enum Command {
 	PING = 0,
 	CLIENT_READY,
 	CLIENT_PICK_PLANET,
+	SERVER_PROVIDE_ID,
 	SERVER_SWITCH_STATE,
 	SERVER_CREATE_PLANET,
 	SERVER_UPDATE_PLANET,
+	SERVER_PROVIDE_PLANET,
 }
 
 
 public class SCR_Client : MonoBehaviour {
 	public static SCR_Client instance;
 	
-	private byte[]			packet;
+	private int		playerID;
+	private byte[]	packet;
 	
 	private void Start() {
 		if (SCR_Loading.firstTimeRun) {
@@ -52,7 +54,7 @@ public class SCR_Client : MonoBehaviour {
         // Send packet
         if (packet.Length > 0) {
 			if (SCR_FakeServer.useFakeServer) {
-				SCR_FakeServer.instance.OnDataReceive (packet);
+				SCR_FakeServer.instance.OnDataReceive (packet, 0);
 			}
 			else {
 				// Real TCP goes here
@@ -63,8 +65,9 @@ public class SCR_Client : MonoBehaviour {
 	
 	
 	
-	public void ChoosePlanet() {
-		
+	public void ChoosePlanet(int index) {
+		AppendCommand (System.BitConverter.GetBytes((int)Command.CLIENT_PICK_PLANET));
+		AppendCommand (System.BitConverter.GetBytes(index));
 	}
 	
 	
@@ -75,7 +78,13 @@ public class SCR_Client : MonoBehaviour {
 		
 		while (readIndex < data.Length) {
 			commandID = BitConverter.ToInt32(data, readIndex);
-			if (commandID == (int)Command.SERVER_CREATE_PLANET) {
+			if (commandID == (int)Command.SERVER_PROVIDE_ID) {
+				// After we send client ready to server, server will reply with playerID
+				playerID = BitConverter.ToInt32(data, readIndex + 1 * 4);
+				readIndex += 2 * 4;
+			}
+			else if (commandID == (int)Command.SERVER_CREATE_PLANET) {
+				// If all 4 players are ready, we'll get planet list
 				int planetNumber = BitConverter.ToInt32(data, readIndex + 1 * 4);
 				int[] planetID 			= new int[planetNumber];
 				int[] planetSize 		= new int[planetNumber];
@@ -94,6 +103,14 @@ public class SCR_Client : MonoBehaviour {
 				readIndex += (planetNumber * 5 + 2) * 4;
 				SCR_Action.instance.CreatePlanet (planetID, planetSize, planetDistance, planetAngle, planetSpeed);
 			}
+			else if (commandID == (int)Command.SERVER_PROVIDE_PLANET) {
+				int playerIndex = BitConverter.ToInt32(data, readIndex + 1 * 4);
+				int planetIndex = BitConverter.ToInt32(data, readIndex + 2 * 4);
+				
+				//
+				
+				readIndex += 3 * 4;
+			}
 			else if (commandID == (int)Command.SERVER_UPDATE_PLANET) {
 				int planetNumber	= SCR_Action.instance.planets.Length;
 				float[] planetAngle	= new float[planetNumber];
@@ -107,7 +124,7 @@ public class SCR_Client : MonoBehaviour {
 			else {
 				// Just to avoid loop
 				// Shouldn't go here
-				readIndex ++;
+				readIndex += 4;
 			}
 		}
 	}
