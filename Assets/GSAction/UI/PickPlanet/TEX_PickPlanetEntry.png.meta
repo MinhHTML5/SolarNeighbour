@@ -6,6 +6,13 @@ TextureImporter:
     21300002: PickPlanetEntry_1
     21300004: PickPlanetEntry_2
     21300006: PickPlanetEntry_3
+    21300008: TEX_PickPlanetEntry_0
+    21300010: TEX_PickPlanetEntry_1
+    21300012: TEX_PickPlanetEntry_2
+    21300014: TEX_PickPlanetEntry_3
+    21300016: TEX_PickPlanetEntry_4
+    21300018: TEX_PickPlanetEntry_5
+    21300020: TEX_PickPlanetEntry_6
   externalObjects: {}
   serializedVersion: 7
   mipmaps:
@@ -121,7 +128,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PickPlanetEntry_0
+      name: TEX_PickPlanetEntry_0
       rect:
         serializedVersion: 2
         x: 0
@@ -129,19 +136,39 @@ TextureImporter:
         width: 370
         height: 120
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bbe8229a2b3f52d40a16c360670ea94f
+      spriteID: 475038716ccd2f14986c996a078e87ae
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PickPlanetEntry_1
+      name: TEX_PickPlanetEntry_1
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 360
+        width: 370
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5828eedcfa8aac740a2a18959306adff
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEX_PickPlanetEntry_2
       rect:
         serializedVersion: 2
         x: 0
@@ -149,19 +176,39 @@ TextureImporter:
         width: 370
         height: 120
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7731360549d8b274e8b9fd5c02e1952d
+      spriteID: 130f67e573a20664b9c952ff370363d9
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PickPlanetEntry_2
+      name: TEX_PickPlanetEntry_3
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 240
+        width: 370
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f175b42a3687a56439aa0aa2fbea6682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEX_PickPlanetEntry_4
       rect:
         serializedVersion: 2
         x: 0
@@ -169,19 +216,39 @@ TextureImporter:
         width: 370
         height: 120
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 490554c323e43cb4fbe6c9e670b5d3a2
+      spriteID: 3c2282741da480c46b56ac14b990b3fc
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PickPlanetEntry_3
+      name: TEX_PickPlanetEntry_5
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 120
+        width: 370
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9420f14a5770f3c4b94ed21ce2af6d15
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEX_PickPlanetEntry_6
       rect:
         serializedVersion: 2
         x: 0
@@ -189,13 +256,13 @@ TextureImporter:
         width: 370
         height: 120
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d785c9a6a4dc53149a41ff0cc365d672
+      spriteID: 2e0c17121f302634884a9525a1b7482c
       vertices: []
       indices: 
       edges: []

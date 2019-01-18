@@ -27,7 +27,6 @@ public enum Command {
 public class SCR_Client : MonoBehaviour {
 	public static SCR_Client instance;
 	
-	private int		playerID;
 	private byte[]	packet;
 	
 	private void Start() {
@@ -80,7 +79,7 @@ public class SCR_Client : MonoBehaviour {
 			commandID = BitConverter.ToInt32(data, readIndex);
 			if (commandID == (int)Command.SERVER_PROVIDE_ID) {
 				// After we send client ready to server, server will reply with playerID
-				playerID = BitConverter.ToInt32(data, readIndex + 1 * 4);
+				SCR_Action.instance.playerID = BitConverter.ToInt32(data, readIndex + 1 * 4);
 				readIndex += 2 * 4;
 			}
 			else if (commandID == (int)Command.SERVER_CREATE_PLANET) {
@@ -107,7 +106,7 @@ public class SCR_Client : MonoBehaviour {
 				int playerIndex = BitConverter.ToInt32(data, readIndex + 1 * 4);
 				int planetIndex = BitConverter.ToInt32(data, readIndex + 2 * 4);
 				
-				//
+				SCR_Action.instance.PickPlanet (playerIndex, planetIndex);
 				
 				readIndex += 3 * 4;
 			}

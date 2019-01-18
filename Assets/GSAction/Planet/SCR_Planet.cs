@@ -8,20 +8,21 @@ public class SCR_Planet : MonoBehaviour {
 	public float ROTATION_SPEED_MIN = -1.5f;
 	public float ROTATION_SPEED_MAX = 1.5f;
 	
-	public Material orbitMaterial;
-	public Material orbitMaterialHighlight;
+	public Material 	orbitMaterial;
+	public Material		orbitMaterialHighlight;
 	
-	public float mass;
-	public float distance;
-	public float angle;
-	public float speed;
+	public int			playerID;
+	public float 		mass;
+	public float 		distance;
+	public float 		angle;
+	public float 		speed;
 	
-	private float rotation = 0;
-	private float rotateSpeed = 0;
-	private VectorLine orbitLine;
+	private float 		rotation = 0;
+	private float 		rotateSpeed = 0;
+	private VectorLine 	orbitLine;
 	
     private void Start() {
-        
+        playerID = -1;
     }
 	
 	public void Init (int size, float d, float a, float s) {

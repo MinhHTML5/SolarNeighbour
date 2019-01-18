@@ -9,16 +9,17 @@ public class SCR_FakeAI : MonoBehaviour {
 	private byte[]		packet;
 	private GameState 	gameState;
 	
-	private float 		readyCounter;
+	private int 		planetID;
+	private float 		timeCounter;
 	
 	
 	
-    
     public void Init(int id) {
 		gameState = GameState.INIT;
 		packet = new byte[0];
         playerID = id;
-		readyCounter = id * 0.5f + UnityEngine.Random.Range (0, 0.5f);
+		planetID = -1;
+		timeCounter = playerID * 0.5f + UnityEngine.Random.Range (0, 0.5f);
     }
 	
 	private void AppendCommand (byte[] data) {
@@ -42,14 +43,22 @@ public class SCR_FakeAI : MonoBehaviour {
 				int planetNumber = BitConverter.ToInt32(data, readIndex + 1 * 4);
 				readIndex += (planetNumber * 5 + 2) * 4;
 				gameState = GameState.CHOOSE_PLANET;
+				timeCounter = playerID * 1.5f + UnityEngine.Random.Range (0, 2.0f);
 			}
 			else if (commandID == (int)Command.SERVER_PROVIDE_PLANET) {
 				// Cheat
+				int playerIndex = BitConverter.ToInt32(data, readIndex + 1 * 4);
+				int planetIndex = BitConverter.ToInt32(data, readIndex + 2 * 4);
+				
+				if (playerID == playerIndex) {
+					planetID = planetIndex;
+				}
+				
 				readIndex += 3 * 4;
 			}
 			else if (commandID == (int)Command.SERVER_UPDATE_PLANET) {
 				// Cheat
-				int planetNumber	= SCR_Action.instance.planets.Length;
+				int planetNumber = SCR_Action.instance.planets.Length;
 				readIndex += (planetNumber + 1) * 4;
 			}
 			else {
@@ -64,12 +73,32 @@ public class SCR_FakeAI : MonoBehaviour {
         float dt = Time.deltaTime;
 		
 		if (gameState == GameState.INIT) {
-			readyCounter -= dt;
-			if (readyCounter <= 0) {
+			// Fake ready after a while
+			timeCounter -= dt;
+			if (timeCounter <= 0) {
 				AppendCommand (System.BitConverter.GetBytes((int)Command.CLIENT_READY));
-				readyCounter += 5.0f;
+				timeCounter += 5.0f;
 			}
 		}
+		else if (gameState == GameState.CHOOSE_PLANET) {
+			// Fake pick planet after a while
+			timeCounter -= dt;
+			if (timeCounter <= 0 && planetID == -1) {
+				bool picked = false;
+				while (!picked) {
+					int choose = UnityEngine.Random.Range (0, SCR_Action.instance.planets.Length);
+					if (SCR_Action.instance.planets[choose].GetComponent<SCR_Planet>().playerID == -1) {
+						picked = true;
+						AppendCommand (System.BitConverter.GetBytes((int)Command.CLIENT_PICK_PLANET));
+						AppendCommand (System.BitConverter.GetBytes(choose));
+						
+						// In case cannot pick
+						timeCounter += 1.0f;
+					}
+				}
+			}
+		}
+		
 		
 		
 		

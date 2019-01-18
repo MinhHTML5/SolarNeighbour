@@ -17,6 +17,8 @@ public class SCR_Action : MonoBehaviour {
 	
 	// Public shit
 	public GameState		gameState;
+	public int				playerID;
+	public int				planetID;
 	
 	// Private shit
 	private SCR_Camera cameraScript		= null;
@@ -107,9 +109,21 @@ public class SCR_Action : MonoBehaviour {
 		cameraScript.PickPlanet();
 		
 		uiPickPlanetScript.CreatePlanetEntries (planetID, planetSize, planetDistance);
-		
-		// TEST
-		//homePlanet = planets[4];
+	}
+	
+	public void PickPlanet (int playerIndex, int planetIndex) {
+		planets[planetIndex].GetComponent<SCR_Planet>().playerID = playerIndex;
+		if (playerID == playerIndex) {
+			planetID = planetIndex;
+			homePlanet = planets[planetIndex];
+			for (int i=0; i<uiPickPlanetScript.pickPlanetEntries.Length; i++) {
+				uiPickPlanetScript.pickPlanetEntries[i].GetComponent<SCR_PickPlanetEntry>().NonePick();
+			}
+			uiPickPlanetScript.pickPlanetEntries[planetID].GetComponent<SCR_PickPlanetEntry>().MePick();
+		}
+		else {
+			uiPickPlanetScript.pickPlanetEntries[planetIndex].GetComponent<SCR_PickPlanetEntry>().EnemyPick(playerIndex);
+		}
 	}
 	
 	public void UpdatePlanet (float[] planetAngle) {

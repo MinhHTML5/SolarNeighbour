@@ -9,6 +9,9 @@ public class SCR_PickPlanetEntry : MonoBehaviour {
 	
 	public GameObject		BTN_PickButton;
 	public GameObject		BTN_ConfirmButton;
+	public GameObject		IMG_MePicked;
+	public GameObject		IMG_EnemyPicked;
+	public GameObject		IMG_NonePicked;
 	public GameObject		IMG_PlanetIcon;
 	public Text				TXT_PlanetName;
 	public Text				TXT_PlanetMass;
@@ -58,8 +61,37 @@ public class SCR_PickPlanetEntry : MonoBehaviour {
 		pickPlanetScript.ConfirmPlanet(index);
 	}
 	public void Deselect() {
-		BTN_PickButton.SetActive(true);
+		if (!IMG_MePicked.activeSelf && !IMG_EnemyPicked.activeSelf && !IMG_NonePicked.activeSelf) {
+			BTN_PickButton.SetActive(true);
+			BTN_ConfirmButton.SetActive(false);
+			TXT_PlanetName.text = "Solar " + (index + 1);
+		}
+	}
+	
+	public void MePick() {
+		BTN_PickButton.SetActive(false);
 		BTN_ConfirmButton.SetActive(false);
-		TXT_PlanetName.text = "Solar " + (index + 1);
+		IMG_MePicked.SetActive(true);
+		IMG_EnemyPicked.SetActive(false);
+		IMG_NonePicked.SetActive(false);
+		TXT_PlanetName.text = "You";
+	}
+	public void EnemyPick(int playerID) {
+		BTN_PickButton.SetActive(false);
+		BTN_ConfirmButton.SetActive(false);
+		IMG_MePicked.SetActive(false);
+		IMG_EnemyPicked.SetActive(true);
+		IMG_NonePicked.SetActive(false);
+		TXT_PlanetName.text = "Player " + (playerID + 1);
+	}
+	public void NonePick() {
+		if (!IMG_MePicked.activeSelf && !IMG_EnemyPicked.activeSelf && !IMG_NonePicked.activeSelf) {
+			BTN_PickButton.SetActive(false);
+			BTN_ConfirmButton.SetActive(false);
+			IMG_MePicked.SetActive(false);
+			IMG_EnemyPicked.SetActive(false);
+			IMG_NonePicked.SetActive(true);
+			TXT_PlanetName.text = "Solar " + (index + 1);
+		}
 	}
 }

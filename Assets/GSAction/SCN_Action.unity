@@ -858,6 +858,8 @@ MonoBehaviour:
   homePlanet: {fileID: 0}
   uiPickPlanetScript: {fileID: 526017370}
   gameState: 0
+  playerID: 0
+  planetID: 0
 --- !u!4 &2112755766
 Transform:
   m_ObjectHideFlags: 0

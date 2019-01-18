@@ -136,6 +136,9 @@ public class SCR_FakeServer : MonoBehaviour {
 		// Send broadcast packet
         if (broadcastPacket.Length > 0) {
 			SCR_Client.instance.OnDataReceive (broadcastPacket);
+			fakeAI[0].OnDataReceive (broadcastPacket);
+			fakeAI[1].OnDataReceive (broadcastPacket);
+			fakeAI[2].OnDataReceive (broadcastPacket);
 			broadcastPacket = new byte[0];
 		}
 		

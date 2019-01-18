@@ -28,7 +28,8 @@ public class SCR_PickPlanet : MonoBehaviour {
 		SCR_Action.instance.planets[index].GetComponent<SCR_Planet>().HighlightOrbit(true);
 	}
 	public void ConfirmPlanet (int index) {
-		GetComponent<RectTransform>().DOAnchorPosX (500, 0.5f, true);
+		SCR_Client.instance.ChoosePlanet (index);
+		//GetComponent<RectTransform>().DOAnchorPosX (500, 0.5f, true);
 	}
 	
 	public void CreatePlanetEntries (int[] planetID, int[] planetSize, float[] planetDistance) {
