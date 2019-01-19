@@ -9,7 +9,7 @@ public class SCR_Config {
 	public const int		NUMBER_OF_PLANET_CREATE		= 8;
 	public const float		ORBIT_DISTANCE_MIN			= 50;
 	public const float		ORBIT_DISTANCE_MAX			= 75;
-	public const float		GRAVITY_CONSTANT 			= 0.000001f;
+	public const float		GRAVITY_CONSTANT 			= 0.00001f;
 	
 	// Client / server variable
 	public const float 		PICK_PLANET_TIME 			= 15;
