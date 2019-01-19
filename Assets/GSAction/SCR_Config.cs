@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SCR_Setting {
+public class SCR_Config {
     // Game variable
 	public const int		SUN_MASS				 	= 1000000000;
 	public const int		NUMBER_OF_PLANET_TEMPLATE 	= 20;

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SCR_Camera : MonoBehaviour {
+	public static SCR_Camera instance;
+	
 	public float ROTATE_ACCELERATION;
 	public float ROTATE_MULTIPLIER;
 	public float DISTANCE_ACCELERATION;
@@ -50,7 +52,7 @@ public class SCR_Camera : MonoBehaviour {
 
 
 	private void Start() {
-        
+        instance = this;
     }
     private void Update() {
 		float dt = Time.deltaTime;
@@ -140,6 +142,11 @@ public class SCR_Camera : MonoBehaviour {
 		targetOffset = OFFSET_AMOUNT;
 		targetXAngle = MAX_X_ANGLE;
 		targetZDistance = MAX_DISTANCE;
+	}
+	public void PickPlanetComplete() {
+		targetOffset = 0;
+		targetXAngle = 30;
+		targetZDistance = 200;
 	}
 
 	public void Rotate(float deltaX, float deltaY) {

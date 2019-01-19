@@ -15,7 +15,7 @@ public class SCR_MainInfoPanel : MonoBehaviour {
 	}
 	
     public void ShowPanel () {
-		GetComponent<RectTransform>().DOAnchorPosY (0, 0.5f, true);
+		GetComponent<RectTransform>().DOAnchorPosY (-10, 0.5f, true);
 	}
 	public void HidePanel () {
 		GetComponent<RectTransform>().DOAnchorPosY (200, 0.5f, true);

@@ -6,12 +6,6 @@ using UnityEngine;
 
 
 
-public enum GameState {
-	INIT = 0,
-	CHOOSE_PLANET,
-	ACTION
-}
-
 public enum Command {
 	PING = 0,
 	CLIENT_READY,
@@ -21,6 +15,7 @@ public enum Command {
 	SERVER_CREATE_PLANET,
 	SERVER_UPDATE_PLANET,
 	SERVER_PROVIDE_PLANET,
+	SERVER_START_GAME,
 }
 
 
@@ -109,6 +104,10 @@ public class SCR_Client : MonoBehaviour {
 				SCR_Action.instance.PickPlanet (playerIndex, planetIndex);
 				
 				readIndex += 3 * 4;
+			}
+			else if (commandID == (int)Command.SERVER_START_GAME) {
+				SCR_Action.instance.StartGame();
+				readIndex += 4;
 			}
 			else if (commandID == (int)Command.SERVER_UPDATE_PLANET) {
 				int planetNumber	= SCR_Action.instance.planets.Length;

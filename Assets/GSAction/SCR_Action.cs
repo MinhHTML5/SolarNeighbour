@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+public enum GameState {
+	INIT = 0,
+	CHOOSE_PLANET,
+	ACTION
+}
+
 public class SCR_Action : MonoBehaviour {
 	// Instance
 	public static SCR_Action instance;
@@ -13,15 +19,12 @@ public class SCR_Action : MonoBehaviour {
 	public GameObject[] 	planets;
 	public GameObject 		homePlanet;
 	
-	public SCR_PickPlanet	uiPickPlanetScript;
-	
 	// Public shit
 	public GameState		gameState;
 	public int				playerID;
 	public int				planetID;
 	
 	// Private shit
-	private SCR_Camera cameraScript		= null;
 	private bool  mouseDown				= false;
 	private float mouseDownX			= 0;
 	private float mouseDownY			= 0;
@@ -39,8 +42,6 @@ public class SCR_Action : MonoBehaviour {
 		
 		instance = this;
 		gameState = GameState.INIT;
-		cameraScript = Camera.main.GetComponent<SCR_Camera>();
-		
 		
 		SCR_MainInfoPanel.instance.ShowPanel();
 		SCR_MainInfoPanel.instance.ShowWaitingForPlayers();
@@ -66,7 +67,7 @@ public class SCR_Action : MonoBehaviour {
 				mouseDownX = Input.mousePosition.x;
 				mouseDownY = Input.mousePosition.y;
 				
-				cameraScript.Rotate (deltaX, deltaY);
+				SCR_Camera.instance.Rotate (deltaX, deltaY);
 			}
 		}
 		else {
@@ -76,7 +77,7 @@ public class SCR_Action : MonoBehaviour {
 		}
 		// Mouse wheell
 		if (Input.GetAxis("Mouse ScrollWheel") != 0) {
-			cameraScript.Zoom (Input.GetAxis("Mouse ScrollWheel"));
+			SCR_Camera.instance.Zoom (Input.GetAxis("Mouse ScrollWheel"));
 		}
     }
 	
@@ -110,9 +111,13 @@ public class SCR_Action : MonoBehaviour {
 		}
 		
 		gameState = GameState.CHOOSE_PLANET;
-		cameraScript.PickPlanet();
 		
-		uiPickPlanetScript.CreatePlanetEntries (planetID, planetSize, planetDistance);
+		SCR_Camera.instance.PickPlanet();
+		SCR_MainInfoPanel.instance.ShowChooseAPlanet();
+		SCR_UITimer.instance.Show();
+		SCR_UITimer.instance.SetTime(SCR_Config.PICK_PLANET_TIME);
+		SCR_UITimer.instance.Start();
+		SCR_PickPlanet.instance.CreatePlanetEntries (planetID, planetSize, planetDistance);
 	}
 	
 	public void PickPlanet (int playerIndex, int planetIndex) {
@@ -120,14 +125,25 @@ public class SCR_Action : MonoBehaviour {
 		if (playerID == playerIndex) {
 			planetID = planetIndex;
 			homePlanet = planets[planetIndex];
-			for (int i=0; i<uiPickPlanetScript.pickPlanetEntries.Length; i++) {
-				uiPickPlanetScript.pickPlanetEntries[i].GetComponent<SCR_PickPlanetEntry>().NonePick();
+			for (int i=0; i<SCR_PickPlanet.instance.pickPlanetEntries.Length; i++) {
+				SCR_PickPlanet.instance.pickPlanetEntries[i].GetComponent<SCR_PickPlanetEntry>().NonePick();
+				SCR_PickPlanet.instance.pickPlanetEntries[i].GetComponent<SCR_PickPlanetEntry>().Deselect();
+				planets[i].GetComponent<SCR_Planet>().HighlightOrbit(false);
 			}
-			uiPickPlanetScript.pickPlanetEntries[planetID].GetComponent<SCR_PickPlanetEntry>().MePick();
+			SCR_PickPlanet.instance.pickPlanetEntries[planetID].GetComponent<SCR_PickPlanetEntry>().MePick();
+			planets[planetID].GetComponent<SCR_Planet>().HighlightOrbit(true);
 		}
 		else {
-			uiPickPlanetScript.pickPlanetEntries[planetIndex].GetComponent<SCR_PickPlanetEntry>().EnemyPick(playerIndex);
+			SCR_PickPlanet.instance.pickPlanetEntries[planetIndex].GetComponent<SCR_PickPlanetEntry>().EnemyPick(playerIndex);
 		}
+	}
+	
+	public void StartGame () {
+		gameState = GameState.ACTION;
+		SCR_Camera.instance.PickPlanetComplete();
+		SCR_MainInfoPanel.instance.HidePanel();
+		SCR_UITimer.instance.Hide();
+		SCR_PickPlanet.instance.Hide();
 	}
 	
 	public void UpdatePlanet (float[] planetAngle) {

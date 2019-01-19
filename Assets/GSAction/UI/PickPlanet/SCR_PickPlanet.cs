@@ -6,13 +6,14 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 public class SCR_PickPlanet : MonoBehaviour {
+	public static SCR_PickPlanet instance;
 	public GameObject PFB_PickPlanetEntry;
 	
 	
 	public GameObject[] pickPlanetEntries;
 	
     private void Start() {
-        
+        instance = this;
     }
 
     private void Update() {
@@ -44,9 +45,9 @@ public class SCR_PickPlanet : MonoBehaviour {
 		}
 		
 		GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
-		SCR_MainInfoPanel.instance.ShowChooseAPlanet();
-		SCR_UITimer.instance.Show();
-		SCR_UITimer.instance.SetTime(15);
-		SCR_UITimer.instance.Start();
+	}
+	
+	public void Hide () {
+		GetComponent<RectTransform>().DOAnchorPosX (500, 0.5f, true);
 	}
 }

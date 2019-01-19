@@ -37,7 +37,7 @@ public class SCR_FakeServer : MonoBehaviour {
 		}
 		
 		// Import setting
-		pickTimeOut = SCR_Setting.PICK_PLANET_TIME + 1;
+		pickTimeOut = SCR_Config.PICK_PLANET_TIME + 1;
 		
 		// Init everything
 		instance = this;
@@ -118,6 +118,38 @@ public class SCR_FakeServer : MonoBehaviour {
 		}
 		else if (gameState == GameState.CHOOSE_PLANET) {
 			pickTimeOut -= dt;
+			if (pickTimeOut <= 0) {
+				// Find out who haven't picked
+				List<int> unpick = new List<int>();
+				unpick.Add(0); unpick.Add(1); unpick.Add(2); unpick.Add(3);
+				for (int i=0; i<planet.Length; i++) {
+					for (int j=0; j<unpick.Count; j++) {
+						if (planet[i].playerID == unpick[j]) {
+							unpick.RemoveAt(j);
+							break;
+						}
+					}
+				}
+				
+				for (int i=0; i<unpick.Count; i++) {
+					// Pick randomly for those dudes
+					bool ok = false;
+					while (!ok) {
+						int choose = Random.Range (0, planet.Length);
+						if (planet[choose].playerID == -1) {
+							planet[choose].playerID = unpick[i];
+							AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_PROVIDE_PLANET));
+							AppendBroadcastCommand (System.BitConverter.GetBytes(unpick[i]));
+							AppendBroadcastCommand (System.BitConverter.GetBytes(choose));
+							unpick.RemoveAt(i);
+							ok = true;
+						}
+					}
+				}
+				
+				gameState = GameState.ACTION;
+				AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_START_GAME));
+			}
 		}
 		else if (gameState == GameState.ACTION) {
 			// Update planets movement
@@ -229,15 +261,10 @@ public class SCR_FakeServer : MonoBehaviour {
 	
 	
 	
-	
-	
-	
-	
-	
 	private void CreatePlanet () {
 		// Randomly create a list of planet
 		List<int> planetsToPickFrom = new List<int>();
-		for (int i=0; i<SCR_Setting.NUMBER_OF_PLANET_TEMPLATE; i++) {
+		for (int i=0; i<SCR_Config.NUMBER_OF_PLANET_TEMPLATE; i++) {
 			// Currently, we have 17 planets template
 			planetsToPickFrom.Add (i);
 		}
@@ -254,12 +281,12 @@ public class SCR_FakeServer : MonoBehaviour {
 		planetSizesToChoose.Add(3);
 		
 		// New planet will be saved here
-		planet = new FakePlanet[SCR_Setting.NUMBER_OF_PLANET_CREATE];
+		planet = new FakePlanet[SCR_Config.NUMBER_OF_PLANET_CREATE];
 		
 		// Now create them
-		float currentDistance = SCR_Setting.ORBIT_DISTANCE_MAX;
-		for (int i=0; i<SCR_Setting.NUMBER_OF_PLANET_CREATE; i++) {
-			currentDistance += Random.Range (SCR_Setting.ORBIT_DISTANCE_MIN, SCR_Setting.ORBIT_DISTANCE_MAX);
+		float currentDistance = SCR_Config.ORBIT_DISTANCE_MAX;
+		for (int i=0; i<SCR_Config.NUMBER_OF_PLANET_CREATE; i++) {
+			currentDistance += Random.Range (SCR_Config.ORBIT_DISTANCE_MIN, SCR_Config.ORBIT_DISTANCE_MAX);
 			
 			int chosen 	= Random.Range(0, planetsToPickFrom.Count);
 			int size 	= Random.Range(0, planetSizesToChoose.Count);
@@ -268,7 +295,7 @@ public class SCR_FakeServer : MonoBehaviour {
 			int		planetSize		= planetSizesToChoose[size];
 			float 	planetDistance	= currentDistance;
 			float	planetAngle		= Random.Range(0, 360);
-			float 	orbitalSpeed 	= Mathf.Sqrt(SCR_Setting.GRAVITY_CONSTANT * SCR_Setting.SUN_MASS / currentDistance);
+			float 	orbitalSpeed 	= Mathf.Sqrt(SCR_Config.GRAVITY_CONSTANT * SCR_Config.SUN_MASS / currentDistance);
 			float 	angularSpeed 	= Mathf.Atan(orbitalSpeed / currentDistance) * SCR_Helper.RAD_TO_DEG;
 			
 			planet[i] = new FakePlanet(planetID, planetSize, planetDistance, planetAngle, angularSpeed);
@@ -279,8 +306,8 @@ public class SCR_FakeServer : MonoBehaviour {
 		
 		// Send a command to client
 		AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_CREATE_PLANET));
-		AppendBroadcastCommand (System.BitConverter.GetBytes(SCR_Setting.NUMBER_OF_PLANET_CREATE));
-		for (int i=0; i<SCR_Setting.NUMBER_OF_PLANET_CREATE; i++) {
+		AppendBroadcastCommand (System.BitConverter.GetBytes(SCR_Config.NUMBER_OF_PLANET_CREATE));
+		for (int i=0; i<SCR_Config.NUMBER_OF_PLANET_CREATE; i++) {
 			AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].id));
 			AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].size));
 			AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].distance));
