@@ -40,6 +40,10 @@ public class SCR_Action : MonoBehaviour {
 		instance = this;
 		gameState = GameState.INIT;
 		cameraScript = Camera.main.GetComponent<SCR_Camera>();
+		
+		
+		SCR_MainInfoPanel.instance.ShowPanel();
+		SCR_MainInfoPanel.instance.ShowWaitingForPlayers();
     }
 	
 	// Update

@@ -8,7 +8,6 @@ using DG.Tweening;
 public class SCR_PickPlanet : MonoBehaviour {
 	public GameObject PFB_PickPlanetEntry;
 	
-	public GameObject UI_WaitingForPlayers;
 	
 	public GameObject[] pickPlanetEntries;
 	
@@ -45,6 +44,9 @@ public class SCR_PickPlanet : MonoBehaviour {
 		}
 		
 		GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
-		UI_WaitingForPlayers.GetComponent<RectTransform>().DOAnchorPosY (-200, 0.5f, true);
+		SCR_MainInfoPanel.instance.ShowChooseAPlanet();
+		SCR_UITimer.instance.Show();
+		SCR_UITimer.instance.SetTime(15);
+		SCR_UITimer.instance.Start();
 	}
 }

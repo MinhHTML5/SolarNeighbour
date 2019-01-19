@@ -10,13 +10,6 @@ public class SCR_FakeServer : MonoBehaviour {
 	
 	public GameObject		PFB_FakeAI;
 	
-	public int				SUN_MASS				 	= 1000000000;
-	public int				NUMBER_OF_PLANET_TEMPLATE 	= 20;
-	public int				NUMBER_OF_PLANET_CREATE		= 8;
-	public float			ORBIT_DISTANCE_MIN			= 50;
-	public float			ORBIT_DISTANCE_MAX			= 75;
-	public float			GRAVITY_CONSTANT 			= 0.000001f;
-	
 	private GameState 		gameState;
 	private GameObject[]	fakeAIObject;
 	private SCR_FakeAI[]	fakeAI;
@@ -27,7 +20,7 @@ public class SCR_FakeServer : MonoBehaviour {
 	private byte[]			privatePacket_2;
 	private byte[]			privatePacket_3;
 	private byte[]			privatePacket_4;
-	private float			pickTimeOut					= 16.0f;
+	private float			pickTimeOut;
 	private bool[]			playerReady					= new bool [4];
 	
 	
@@ -43,6 +36,9 @@ public class SCR_FakeServer : MonoBehaviour {
 			return;
 		}
 		
+		// Import setting
+		pickTimeOut = SCR_Setting.PICK_PLANET_TIME + 1;
+		
 		// Init everything
 		instance = this;
         gameState = GameState.INIT;
@@ -54,6 +50,8 @@ public class SCR_FakeServer : MonoBehaviour {
 		privatePacket_2 = new byte[0];
 		privatePacket_3 = new byte[0];
 		privatePacket_4 = new byte[0];
+		
+		
 		
 		// Create 3 fake AI, who will send message like a real human opponent
 		// Their intelligence is doubtly good.
@@ -239,7 +237,7 @@ public class SCR_FakeServer : MonoBehaviour {
 	private void CreatePlanet () {
 		// Randomly create a list of planet
 		List<int> planetsToPickFrom = new List<int>();
-		for (int i=0; i<NUMBER_OF_PLANET_TEMPLATE; i++) {
+		for (int i=0; i<SCR_Setting.NUMBER_OF_PLANET_TEMPLATE; i++) {
 			// Currently, we have 17 planets template
 			planetsToPickFrom.Add (i);
 		}
@@ -256,12 +254,12 @@ public class SCR_FakeServer : MonoBehaviour {
 		planetSizesToChoose.Add(3);
 		
 		// New planet will be saved here
-		planet = new FakePlanet[NUMBER_OF_PLANET_CREATE];
+		planet = new FakePlanet[SCR_Setting.NUMBER_OF_PLANET_CREATE];
 		
 		// Now create them
-		float currentDistance = ORBIT_DISTANCE_MAX;
-		for (int i=0; i<NUMBER_OF_PLANET_CREATE; i++) {
-			currentDistance += Random.Range (ORBIT_DISTANCE_MIN, ORBIT_DISTANCE_MAX);
+		float currentDistance = SCR_Setting.ORBIT_DISTANCE_MAX;
+		for (int i=0; i<SCR_Setting.NUMBER_OF_PLANET_CREATE; i++) {
+			currentDistance += Random.Range (SCR_Setting.ORBIT_DISTANCE_MIN, SCR_Setting.ORBIT_DISTANCE_MAX);
 			
 			int chosen 	= Random.Range(0, planetsToPickFrom.Count);
 			int size 	= Random.Range(0, planetSizesToChoose.Count);
@@ -270,7 +268,7 @@ public class SCR_FakeServer : MonoBehaviour {
 			int		planetSize		= planetSizesToChoose[size];
 			float 	planetDistance	= currentDistance;
 			float	planetAngle		= Random.Range(0, 360);
-			float 	orbitalSpeed 	= Mathf.Sqrt(GRAVITY_CONSTANT * SUN_MASS / currentDistance);
+			float 	orbitalSpeed 	= Mathf.Sqrt(SCR_Setting.GRAVITY_CONSTANT * SCR_Setting.SUN_MASS / currentDistance);
 			float 	angularSpeed 	= Mathf.Atan(orbitalSpeed / currentDistance) * SCR_Helper.RAD_TO_DEG;
 			
 			planet[i] = new FakePlanet(planetID, planetSize, planetDistance, planetAngle, angularSpeed);
@@ -281,8 +279,8 @@ public class SCR_FakeServer : MonoBehaviour {
 		
 		// Send a command to client
 		AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_CREATE_PLANET));
-		AppendBroadcastCommand (System.BitConverter.GetBytes(NUMBER_OF_PLANET_CREATE));
-		for (int i=0; i<NUMBER_OF_PLANET_CREATE; i++) {
+		AppendBroadcastCommand (System.BitConverter.GetBytes(SCR_Setting.NUMBER_OF_PLANET_CREATE));
+		for (int i=0; i<SCR_Setting.NUMBER_OF_PLANET_CREATE; i++) {
 			AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].id));
 			AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].size));
 			AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].distance));
