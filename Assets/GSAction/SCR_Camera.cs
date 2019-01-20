@@ -52,6 +52,7 @@ public class SCR_Camera : MonoBehaviour {
 	private bool  lockView				= false;
 	private float previousXAngle		= 30;
 	private float previousZDistance		= 200;
+	private bool  previousViewHome		= false;
 	
 	
 	
@@ -65,8 +66,8 @@ public class SCR_Camera : MonoBehaviour {
 		
 		// Chase center point
 		if (viewHome == true) {
-			centerTargetX = SCR_Action.instance.homePlanet.transform.position.x;
-			centerTargetZ = SCR_Action.instance.homePlanet.transform.position.z;
+			centerTargetX = SCR_Action.instance.homePlanet.GetComponent<SCR_Planet>().x;
+			centerTargetZ = SCR_Action.instance.homePlanet.GetComponent<SCR_Planet>().z;
 		}
         
 		float centerDistance 		= SCR_Helper.DistanceBetweenTwoPoint (centerX, centerZ, centerTargetX, centerTargetZ);
@@ -76,8 +77,9 @@ public class SCR_Camera : MonoBehaviour {
 		if (centerTargetSpeed > centerSpeed + centerAcceleration) 		centerSpeed += centerAcceleration;
 		else if (centerTargetSpeed < centerSpeed - centerAcceleration) 	centerSpeed -= centerAcceleration;
 		else															centerSpeed = centerTargetSpeed;
-		centerX += centerSpeed * SCR_Helper.Sin(centerAngle);
-		centerZ += centerSpeed * SCR_Helper.Cos(centerAngle);
+		
+		centerX += centerSpeed * SCR_Helper.Sin(centerAngle) * dt;
+		centerZ += centerSpeed * SCR_Helper.Cos(centerAngle) * dt;
 		
 		
 		// Movement around center point
@@ -134,8 +136,8 @@ public class SCR_Camera : MonoBehaviour {
 	public void ViewHome() {
 		if (SCR_Action.instance.homePlanet && !lockView) {
 			viewHome = true;
-			centerTargetX = SCR_Action.instance.homePlanet.transform.position.x;
-			centerTargetZ = SCR_Action.instance.homePlanet.transform.position.z;
+			centerTargetX = SCR_Action.instance.homePlanet.GetComponent<SCR_Planet>().x;
+			centerTargetZ = SCR_Action.instance.homePlanet.GetComponent<SCR_Planet>().z;
 			
 			BTN_ViewHome.SetActive (false);
 			BTN_ViewSun.SetActive (true);
@@ -151,7 +153,16 @@ public class SCR_Camera : MonoBehaviour {
 			BTN_ViewSun.SetActive (false);
 		}
 	}
-	public void TacticalView() {
+	public void CasualView() {
+		targetOffset = 0;
+		targetXAngle = previousXAngle;
+		targetZDistance = previousZDistance;
+		lockView = false;
+		if (previousViewHome) {
+			ViewHome();
+		}
+	}
+	public void PickPlanetView() {
 		ViewSun();
 		previousXAngle = targetXAngle;
 		previousZDistance = targetZDistance;
@@ -160,12 +171,16 @@ public class SCR_Camera : MonoBehaviour {
 		targetZDistance = MAX_DISTANCE;
 		lockView = true;
 	}
-	public void CasualView() {
-		targetOffset = 0;
-		targetXAngle = previousXAngle;
-		targetZDistance = previousZDistance;
-		lockView = false;
+	public void TacticalView() {
+		previousXAngle = targetXAngle;
+		previousZDistance = targetZDistance;
+		targetXAngle = MAX_X_ANGLE;
+		targetZDistance = MAX_DISTANCE;
+		previousViewHome = viewHome;
+		ViewSun();
+		lockView = true;
 	}
+	
 
 	public void Rotate(float deltaX, float deltaY) {
 		if (!lockView) {

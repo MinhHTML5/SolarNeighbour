@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MAT_OrbitLine
+  m_Name: MAT_OrbitLineMine
   m_Shader: {fileID: 10755, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -73,5 +73,5 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.10786757, g: 0.18689923, b: 0.2264151, a: 0.38431373}
+    - _Color: {r: 0.12758099, g: 0.5754717, b: 0.29176214, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

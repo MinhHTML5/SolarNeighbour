@@ -88,7 +88,6 @@ GameObject:
   - component: {fileID: 8777763535850294350}
   - component: {fileID: 8777763535850294351}
   - component: {fileID: 8777763535850294344}
-  - component: {fileID: 5912173703713069842}
   m_Layer: 0
   m_Name: PFB_Planet_20
   m_TagString: Untagged
@@ -156,24 +155,3 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &5912173703713069842
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8777763535850294346}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b965404f2da73df41a5f35e7aef55530, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ROTATION_SPEED_MIN: -1.5
-  ROTATION_SPEED_MAX: 1.5
-  orbitMaterial: {fileID: 2100000, guid: 3d4ca1330f196ec44adcbc9371de7b22, type: 2}
-  orbitMaterialHighlight: {fileID: 2100000, guid: 385c4e533a3fa0445b6fcfc1aab44050,
-    type: 2}
-  mass: 0
-  distance: 0
-  angle: 0
-  speed: 0

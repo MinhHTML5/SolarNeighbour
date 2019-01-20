@@ -23,9 +23,12 @@ public class SCR_UIPickPlanet : MonoBehaviour {
 	public void SelectPlanet (int index) {
 		for (int i=0; i<pickPlanetEntries.Length; i++) {
 			pickPlanetEntries[i].GetComponent<SCR_UIPickPlanetEntry>().Deselect();
-			SCR_Action.instance.planets[i].GetComponent<SCR_Planet>().HighlightOrbit(false);
+			
+			if (SCR_Action.instance.planets[i].GetComponent<SCR_Planet>().playerID == -1) {
+				SCR_Action.instance.planets[i].GetComponent<SCR_Planet>().HighlightOrbit(0);
+			}
 		}
-		SCR_Action.instance.planets[index].GetComponent<SCR_Planet>().HighlightOrbit(true);
+		SCR_Action.instance.planets[index].GetComponent<SCR_Planet>().HighlightOrbit(1);
 	}
 	public void ConfirmPlanet (int index) {
 		SCR_Client.instance.ChoosePlanet (index);
