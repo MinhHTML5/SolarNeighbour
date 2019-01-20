@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SCR_PickPlanetEntry : MonoBehaviour {
+public class SCR_UIPickPlanetEntry : MonoBehaviour {
 	public Sprite[] 		IMG_PlanetIcons;
 	
 	public GameObject		BTN_PickButton;
@@ -17,7 +17,7 @@ public class SCR_PickPlanetEntry : MonoBehaviour {
 	public Text				TXT_PlanetMass;
 	public Text				TXT_PlanetDistance;
 	
-	public SCR_PickPlanet	pickPlanetScript;
+	public SCR_UIPickPlanet	pickPlanetScript;
 	
 	private int				index;
 	

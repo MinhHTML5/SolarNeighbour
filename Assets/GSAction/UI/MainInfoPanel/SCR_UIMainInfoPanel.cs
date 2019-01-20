@@ -4,8 +4,8 @@ using UnityEngine;
 
 using DG.Tweening;
 
-public class SCR_MainInfoPanel : MonoBehaviour {
-	public static SCR_MainInfoPanel instance;
+public class SCR_UIMainInfoPanel : MonoBehaviour {
+	public static SCR_UIMainInfoPanel instance;
 	
 	public GameObject UI_WaitingForPlayers;
 	public GameObject UI_ChooseAPlanet;

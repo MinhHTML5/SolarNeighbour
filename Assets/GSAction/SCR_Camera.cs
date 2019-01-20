@@ -5,6 +5,9 @@ using UnityEngine;
 public class SCR_Camera : MonoBehaviour {
 	public static SCR_Camera instance;
 	
+	public GameObject BTN_ViewHome;
+	public GameObject BTN_ViewSun;
+	
 	public float ROTATE_ACCELERATION;
 	public float ROTATE_MULTIPLIER;
 	public float DISTANCE_ACCELERATION;
@@ -23,7 +26,6 @@ public class SCR_Camera : MonoBehaviour {
 	public float MOUSE_X_SENSITIVITY;
 	public float MOUSE_Y_SENSITIVITY;
 	public float MOUSE_Z_SENSITIVITY;
-	
 	
 	private bool  viewHome				= false;
 	private float centerX				= 0;
@@ -46,6 +48,10 @@ public class SCR_Camera : MonoBehaviour {
 	private float targetYAngle			= 0;
 	private float targetZDistance		= 200;
 	private float targetOffset			= 0;
+	
+	private bool  lockView				= false;
+	private float previousXAngle		= 30;
+	private float previousZDistance		= 200;
 	
 	
 	
@@ -126,41 +132,57 @@ public class SCR_Camera : MonoBehaviour {
 	
 	
 	public void ViewHome() {
-		if (SCR_Action.instance.homePlanet) {
+		if (SCR_Action.instance.homePlanet && !lockView) {
 			viewHome = true;
 			centerTargetX = SCR_Action.instance.homePlanet.transform.position.x;
 			centerTargetZ = SCR_Action.instance.homePlanet.transform.position.z;
+			
+			BTN_ViewHome.SetActive (false);
+			BTN_ViewSun.SetActive (true);
 		}
 	}
 	public void ViewSun() {
-		viewHome = false;
-		centerTargetX = 0;
-		centerTargetZ = 0;
-		targetOffset = 0;
+		if (!lockView) {
+			viewHome = false;
+			centerTargetX = 0;
+			centerTargetZ = 0;
+			targetOffset = 0;
+			BTN_ViewHome.SetActive (true);
+			BTN_ViewSun.SetActive (false);
+		}
 	}
-	public void PickPlanet() {
+	public void TacticalView() {
+		ViewSun();
+		previousXAngle = targetXAngle;
+		previousZDistance = targetZDistance;
 		targetOffset = OFFSET_AMOUNT;
 		targetXAngle = MAX_X_ANGLE;
 		targetZDistance = MAX_DISTANCE;
+		lockView = true;
 	}
-	public void PickPlanetComplete() {
+	public void CasualView() {
 		targetOffset = 0;
-		targetXAngle = 30;
-		targetZDistance = 200;
+		targetXAngle = previousXAngle;
+		targetZDistance = previousZDistance;
+		lockView = false;
 	}
 
 	public void Rotate(float deltaX, float deltaY) {
-		targetYAngle += deltaX * MOUSE_X_SENSITIVITY;
-		targetXAngle += deltaY * MOUSE_Y_SENSITIVITY;
-		
-		if (targetXAngle > MAX_X_ANGLE) targetXAngle = MAX_X_ANGLE;
-		if (targetXAngle < MIN_X_ANGLE) targetXAngle = MIN_X_ANGLE;
+		if (!lockView) {
+			targetYAngle += deltaX * MOUSE_X_SENSITIVITY;
+			targetXAngle += deltaY * MOUSE_Y_SENSITIVITY;
+			
+			if (targetXAngle > MAX_X_ANGLE) targetXAngle = MAX_X_ANGLE;
+			if (targetXAngle < MIN_X_ANGLE) targetXAngle = MIN_X_ANGLE;
+		}
 	}
 	
 	public void Zoom (float scroll) {
-		targetZDistance += scroll * MOUSE_Z_SENSITIVITY;
-		if (targetZDistance > MAX_DISTANCE) targetZDistance = MAX_DISTANCE;
-		if (targetZDistance < MIN_DISTANCE) targetZDistance = MIN_DISTANCE;
+		if (!lockView) {
+			targetZDistance += scroll * MOUSE_Z_SENSITIVITY;
+			if (targetZDistance > MAX_DISTANCE) targetZDistance = MAX_DISTANCE;
+			if (targetZDistance < MIN_DISTANCE) targetZDistance = MIN_DISTANCE;
+		}
 	}
 }
 

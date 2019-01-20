@@ -20,10 +20,10 @@ public class SCR_UITimer : MonoBehaviour {
 	}
 	
 	public void Show () {
-		GetComponent<RectTransform>().DOAnchorPosY (0, 0.5f, true);
+		GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
 	}
 	public void Hide () {
-		GetComponent<RectTransform>().DOAnchorPosY (300, 0.5f, true);
+		GetComponent<RectTransform>().DOAnchorPosX (-250, 0.5f, true);
 	}
 	
 	public void SetTime (float t) {

@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 using DG.Tweening;
 
-public class SCR_PickPlanet : MonoBehaviour {
-	public static SCR_PickPlanet instance;
+public class SCR_UIPickPlanet : MonoBehaviour {
+	public static SCR_UIPickPlanet instance;
 	public GameObject PFB_PickPlanetEntry;
 	
 	
@@ -22,7 +22,7 @@ public class SCR_PickPlanet : MonoBehaviour {
 	
 	public void SelectPlanet (int index) {
 		for (int i=0; i<pickPlanetEntries.Length; i++) {
-			pickPlanetEntries[i].GetComponent<SCR_PickPlanetEntry>().Deselect();
+			pickPlanetEntries[i].GetComponent<SCR_UIPickPlanetEntry>().Deselect();
 			SCR_Action.instance.planets[i].GetComponent<SCR_Planet>().HighlightOrbit(false);
 		}
 		SCR_Action.instance.planets[index].GetComponent<SCR_Planet>().HighlightOrbit(true);
@@ -39,8 +39,8 @@ public class SCR_PickPlanet : MonoBehaviour {
 			pickPlanetEntries[i].transform.SetParent (transform);
 			pickPlanetEntries[i].transform.localScale = new Vector3 (1, 1, 1);
 			pickPlanetEntries[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(15, 420 - i * 120);
-			pickPlanetEntries[i].GetComponent<SCR_PickPlanetEntry>().SetPlanetInfo (i, planetID[i], planetSize[i], planetDistance[i]);
-			pickPlanetEntries[i].GetComponent<SCR_PickPlanetEntry>().pickPlanetScript = this;
+			pickPlanetEntries[i].GetComponent<SCR_UIPickPlanetEntry>().SetPlanetInfo (i, planetID[i], planetSize[i], planetDistance[i]);
+			pickPlanetEntries[i].GetComponent<SCR_UIPickPlanetEntry>().pickPlanetScript = this;
 		}
 		
 		GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
