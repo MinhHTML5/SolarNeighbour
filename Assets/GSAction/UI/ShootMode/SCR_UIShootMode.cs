@@ -43,53 +43,72 @@ public class SCR_UIShootMode : MonoBehaviour {
 		}
 		else {
 			alpha -= dt * 2;
-			if (alpha < 0) alpha = 0;
-		}
-		
-		for (int i=0; i<UI_PlanetIndicator.Length; i++) {
-			if (SCR_Action.instance.gameState == GameState.ACTION) {
-				if (SCR_Action.instance.planets[i].GetComponent<SCR_Planet>().playerID == -1) {
-					UI_PlanetIndicator[i].GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f, alpha * 0.5f);
-				}
-				else if (SCR_Action.instance.planets[i].GetComponent<SCR_Planet>().playerID == SCR_Action.instance.playerID) {
-					UI_PlanetIndicator[i].GetComponent<Image>().color = new Color(0.0f, 1.0f, 0.2f, alpha);
-				}
-				else {
-					UI_PlanetIndicator[i].GetComponent<Image>().color = new Color(1.0f, 0.2f, 0.2f, alpha);
-				}
+			if (alpha < 0) {
+				alpha = 0;
+				UI_ForceIndicator.SetActive (false);
+				UI_AimIndicator.SetActive (false);
 				
-				Vector2 viewportPos = Camera.main.WorldToViewportPoint (SCR_Action.instance.planets[i].GetComponent<SCR_Planet>().GetPosition());
-				Vector2 uiPos = new Vector2 ((viewportPos.x * canvasRect.sizeDelta.x) - (canvasRect.sizeDelta.x * 0.5f), (viewportPos.y * canvasRect.sizeDelta.y) - (canvasRect.sizeDelta.y * 0.5f));
-				
-				UI_PlanetIndicator[i].GetComponent<RectTransform>().anchoredPosition = uiPos;
-				if (SCR_Action.instance.planets[i].GetComponent<SCR_Planet>().playerID == SCR_Action.instance.playerID) {
-					homeX = uiPos.x;
-					homeY = uiPos.y;
+				for (int i=0; i<UI_PlanetIndicator.Length; i++) {
+					UI_PlanetIndicator[i].SetActive (false);
 				}
 			}
 		}
 		
+		if (alpha > 0) {
+			for (int i=0; i<UI_PlanetIndicator.Length; i++) {
+				if (SCR_Action.instance.gameState == GameState.ACTION) {
+					if (SCR_Action.instance.planets[i].GetComponent<SCR_Planet>().playerID == -1) {
+						UI_PlanetIndicator[i].GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f, alpha * 0.5f);
+					}
+					else if (SCR_Action.instance.planets[i].GetComponent<SCR_Planet>().playerID == SCR_Action.instance.playerID) {
+						UI_PlanetIndicator[i].GetComponent<Image>().color = new Color(0.0f, 1.0f, 0.2f, alpha);
+					}
+					else {
+						UI_PlanetIndicator[i].GetComponent<Image>().color = new Color(1.0f, 0.2f, 0.2f, alpha);
+					}
+					
+					Vector2 viewportPos = Camera.main.WorldToViewportPoint (SCR_Action.instance.planets[i].GetComponent<SCR_Planet>().GetPosition());
+					Vector2 uiPos = new Vector2 ((viewportPos.x * canvasRect.sizeDelta.x) - (canvasRect.sizeDelta.x * 0.5f), (viewportPos.y * canvasRect.sizeDelta.y) - (canvasRect.sizeDelta.y * 0.5f));
+					
+					UI_PlanetIndicator[i].GetComponent<RectTransform>().anchoredPosition = uiPos;
+					if (SCR_Action.instance.planets[i].GetComponent<SCR_Planet>().playerID == SCR_Action.instance.playerID) {
+						homeX = uiPos.x;
+						homeY = uiPos.y;
+					}
+				}
+			}
 		
-		float rotation = 90 - SCR_Helper.AngleBetweenTwoPoint (homeX, homeY, aimX, aimY);
-		UI_ForceIndicator.transform.localEulerAngles = new Vector3(0, 0, rotation);
-		UI_ForceIndicator.GetComponent<RectTransform>().anchoredPosition = new Vector2(homeX, homeY);
-		UI_ForceIndicator.GetComponent<Image>().color = new Color(1, 1, 1, alpha);
-		UI_AimIndicator.transform.localEulerAngles = new Vector3(0, 0, rotation);
-		UI_AimIndicator.GetComponent<Image>().color = new Color(1, 1, 1, alpha);
-		UI_AimIndicator.GetComponent<RectTransform>().anchoredPosition = new Vector2(homeX, homeY);
-		
-		float distance = SCR_Helper.DistanceBetweenTwoPoint (homeX, homeY, aimX, aimY);
-		float force = distance / 400;
-		if (force > 1) force = 1;
-		else if (force < 0.2f) force = 0.2f;
-		UI_ForceIndicator.GetComponent<Image>().fillAmount = force;
-		UI_AimIndicator.GetComponent<RectTransform>().sizeDelta = new Vector2(distance, 4);
+			float rotation = 90 - SCR_Helper.AngleBetweenTwoPoint (homeX, homeY, aimX, aimY);
+			UI_ForceIndicator.transform.localEulerAngles = new Vector3(0, 0, rotation);
+			UI_ForceIndicator.GetComponent<RectTransform>().anchoredPosition = new Vector2(homeX, homeY);
+			UI_ForceIndicator.GetComponent<Image>().color = new Color(1, 1, 1, alpha);
+			UI_AimIndicator.transform.localEulerAngles = new Vector3(0, 0, rotation);
+			UI_AimIndicator.GetComponent<Image>().color = new Color(1, 1, 1, alpha);
+			UI_AimIndicator.GetComponent<RectTransform>().anchoredPosition = new Vector2(homeX, homeY);
+			
+			float distance = SCR_Helper.DistanceBetweenTwoPoint (homeX, homeY, aimX, aimY);
+			float force = distance / 400;
+			if (force > 1) force = 1;
+			else if (force < 0.2f) force = 0.2f;
+			UI_ForceIndicator.GetComponent<Image>().fillAmount = force;
+			UI_AimIndicator.GetComponent<RectTransform>().sizeDelta = new Vector2(distance, 4);
+		}
+		else {
+			
+		}
     }
 	
 	public void Show() {
 		UI_ShootMaskLeft.GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
 		UI_ShootMaskRight.GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
 		showing = true;
+		
+		UI_ForceIndicator.SetActive (true);
+		UI_AimIndicator.SetActive (true);
+		
+		for (int i=0; i<UI_PlanetIndicator.Length; i++) {
+			UI_PlanetIndicator[i].SetActive (true);
+		}
 	}
 	
 	public void Hide() {

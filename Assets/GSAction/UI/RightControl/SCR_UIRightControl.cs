@@ -9,7 +9,7 @@ public class SCR_UIRightControl : MonoBehaviour {
 	
     private void Start() {
         instance = this;
-		GetComponent<RectTransform>().anchoredPosition = new Vector2 (200, 0);
+		GetComponent<RectTransform>().anchoredPosition = new Vector2 (400, 0);
     }
     private void Update() {
         
@@ -20,6 +20,6 @@ public class SCR_UIRightControl : MonoBehaviour {
 	}
 	
 	public void Hide() {
-		GetComponent<RectTransform>().DOAnchorPosX (200, 0.5f, true);
+		GetComponent<RectTransform>().DOAnchorPosX (400, 0.5f, true);
 	}
 }
