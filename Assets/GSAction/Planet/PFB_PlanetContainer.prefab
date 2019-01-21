@@ -64,9 +64,9 @@ MonoBehaviour:
   - {fileID: 8777763535850294346, guid: c60f21767b36807418db9eed32cc8a35, type: 3}
   - {fileID: 8777763535850294346, guid: 275f7bd146df242439ce0a5e80df0d6c, type: 3}
   - {fileID: 8777763535850294346, guid: cf6e90867a8deb84db917e4bd21c7939, type: 3}
-  ROTATION_SPEED_MIN: -1.5
-  ROTATION_SPEED_MAX: 1.5
-  MARKING_RADIUS: 20
+  ROTATION_SPEED_MIN: 4
+  ROTATION_SPEED_MAX: 15
+  MARKING_RADIUS: 15
   orbitMaterial: {fileID: 2100000, guid: 3d4ca1330f196ec44adcbc9371de7b22, type: 2}
   orbitMaterialHighlight: {fileID: 2100000, guid: db022e29b81ca734b89720231bfdce22,
     type: 2}

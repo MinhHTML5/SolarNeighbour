@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Vectrosity;
 
 public enum GameState {
 	INIT = 0,
@@ -10,45 +11,51 @@ public enum GameState {
 }
 
 public class SCR_Action : MonoBehaviour {
+	// Const
+	public const float 			MARKING_RADIUS 			= 15.0f;
 	// Instance
-	public static SCR_Action instance;
+	public static SCR_Action 	instance;
 	// Prefab
-	public GameObject 		PFB_Planet;
+	public GameObject 			PFB_Planet;
+	public Material				MAT_LineHighlight;
 	// Object
-	public GameObject 		sun;
-	public GameObject[] 	planets;
-	public GameObject 		homePlanet;
+	public GameObject 			sun;
+	public GameObject[] 		planets;
+	public GameObject 			homePlanet;
 	
-	public GameObject 		BTN_ShootMode;
-	public GameObject 		BTN_CancelShootMode;
+	public GameObject 			BTN_ShootMode;
+	public GameObject 			BTN_CancelShootMode;
 	
 	// Public shit
-	public GameState		gameState;
-	public int				playerID;
-	public int				planetID;
+	public GameState			gameState;
+	public int					playerID;
+	public int					planetID;
+	public Plane				solarPlane;
 	
 	// Private shit
-	private bool  mouseDown				= false;
-	private float mouseDownX			= 0;
-	private float mouseDownY			= 0;
-	private float showMainControlDelay	= 0;
-	private bool  shootMode				= false;
-	
+	private bool  				mouseDown				= false;
+	private float				mouseDownX				= 0;
+	private float 				mouseDownY				= 0;
+	private float 				showMainControlDelay	= 0;
+	private bool  				shootMode				= false;
 	
 	
 	
 	// Init
+	private void Awake() {
+		instance = this;
+	}
     private void Start() {
 		if (SCR_Loading.firstTimeRun) {
 			SCR_Loading.LoadScene ("GSMenu/SCN_Menu");
 			return;
 		}
 		
-		instance = this;
 		gameState = GameState.INIT;
 		
 		SCR_UIMainInfoPanel.instance.ShowPanel();
 		SCR_UIMainInfoPanel.instance.ShowWaitingForPlayers();
+		solarPlane = new Plane (Vector3.up, Vector3.zero);
     }
 	
 	// Update
@@ -59,25 +66,30 @@ public class SCR_Action : MonoBehaviour {
         float touchX = Input.mousePosition.x;
 		float touchY = Input.mousePosition.y;
 		// Mouse drag
-		if (Input.GetMouseButton(0)) {
-			if (mouseDown == false) {
-				mouseDown = true;
-				mouseDownX = Input.mousePosition.x;
-				mouseDownY = Input.mousePosition.y;
+		if (!shootMode) {
+			if (Input.GetMouseButton(0)) {
+				if (mouseDown == false) {
+					mouseDown = true;
+					mouseDownX = Input.mousePosition.x;
+					mouseDownY = Input.mousePosition.y;
+				}
+				else {
+					float deltaX = Input.mousePosition.x - mouseDownX;
+					float deltaY = Input.mousePosition.y - mouseDownY;
+					mouseDownX = Input.mousePosition.x;
+					mouseDownY = Input.mousePosition.y;
+					
+					SCR_Camera.instance.Rotate (deltaX, deltaY);
+				}
 			}
 			else {
-				float deltaX = Input.mousePosition.x - mouseDownX;
-				float deltaY = Input.mousePosition.y - mouseDownY;
-				mouseDownX = Input.mousePosition.x;
-				mouseDownY = Input.mousePosition.y;
-				
-				SCR_Camera.instance.Rotate (deltaX, deltaY);
+				if (mouseDown) {
+					mouseDown = false;
+				}
 			}
 		}
 		else {
-			if (mouseDown) {
-				mouseDown = false;
-			}
+			SCR_UIShootMode.instance.MouseHover (Input.mousePosition);
 		}
 		// Mouse wheel
 		if (Input.GetAxis("Mouse ScrollWheel") != 0) {
@@ -109,12 +121,14 @@ public class SCR_Action : MonoBehaviour {
 		BTN_CancelShootMode.SetActive (true);
 		SCR_Camera.instance.TacticalView();
 		shootMode = true;
+		SCR_UIShootMode.instance.Show();
 	}
 	public void CancelShootMode () {
 		BTN_ShootMode.SetActive (true);
 		BTN_CancelShootMode.SetActive (false);
 		SCR_Camera.instance.CasualView();
 		shootMode = false;
+		SCR_UIShootMode.instance.Hide();
 	}
 	
 	

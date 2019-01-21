@@ -5,12 +5,11 @@ using UnityEngine;
 using Vectrosity;
 
 public class SCR_Planet : MonoBehaviour {
-	public GameObject[] 	PFB_Planet;
+	public GameObject[] PFB_Planet;
 	
-	public float ROTATION_SPEED_MIN = -1.5f;
-	public float ROTATION_SPEED_MAX = 1.5f;
-	
-	public float MARKING_RADIUS = 20;
+	public const float 	ROTATION_SPEED_MIN = 5.0f;
+	public const float 	ROTATION_SPEED_MAX = 20.0f;
+	public const float 	MARKING_RADIUS = 15.0f;
 	
 	public Material 	orbitMaterial;
 	public Material		orbitMaterialHighlight;
@@ -75,6 +74,7 @@ public class SCR_Planet : MonoBehaviour {
 		orbitLine.material = orbitMaterial;
 		orbitLine.Draw3DAuto();
 		
+		/*
 		List<Vector3> markingPoints = new List<Vector3>();
 		for (int i=0; i<=180; i++) {
 			tempX = SCR_Helper.Sin(i * 2) * MARKING_RADIUS;
@@ -84,7 +84,7 @@ public class SCR_Planet : MonoBehaviour {
 		markingLine = new VectorLine("VEC_Marking", markingPoints, 1.0f);
 		markingLine.lineType = LineType.Continuous;
 		markingLine.material = orbitMaterial;
-		markingLine.Draw3DAuto();
+		*/
 	}
 	
 	public void UpdateAngle (float a) {
@@ -92,6 +92,10 @@ public class SCR_Planet : MonoBehaviour {
 		if (Mathf.Abs(angle - a) > 1) {
 			angle = a;
 		}
+	}
+	
+	public Vector3 GetPosition () {
+		return new Vector3(x, 0 ,z);
 	}
 
     private void Update() {
@@ -114,26 +118,26 @@ public class SCR_Planet : MonoBehaviour {
 		gameObject.transform.localEulerAngles = new Vector3(0, angle, 0);
 		
 		orbitLine.drawTransform = transform;
-		markingLine.drawTransform = transform;
+		//markingLine.drawTransform = transform;
     }
 	
 	
 	public void HighlightOrbit(int type) {
 		if (type == 0) {
 			orbitLine.material = orbitMaterial;
-			markingLine.material = orbitMaterial;
+			//markingLine.material = orbitMaterial;
 		}
 		else if (type == 1) {
 			orbitLine.material = orbitMaterialHighlight;
-			markingLine.material = orbitMaterialHighlight;
+			//markingLine.material = orbitMaterialHighlight;
 		}
 		else if (type == 2) {
 			orbitLine.material = orbitMaterialEnemy;
-			markingLine.material = orbitMaterialEnemy;
+			//markingLine.material = orbitMaterialEnemy;
 		}
 		else if (type == 3) {
 			orbitLine.material = orbitMaterialMe;
-			markingLine.material = orbitMaterialMe;
+			//markingLine.material = orbitMaterialMe;
 		}
 	}
 }
