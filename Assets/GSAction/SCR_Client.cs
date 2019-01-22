@@ -10,12 +10,16 @@ public enum Command {
 	PING = 0,
 	CLIENT_READY,
 	CLIENT_PICK_PLANET,
+	CLIENT_SHOOT,
 	SERVER_PROVIDE_ID,
 	SERVER_SWITCH_STATE,
 	SERVER_CREATE_PLANET,
-	SERVER_UPDATE_PLANET,
 	SERVER_PROVIDE_PLANET,
 	SERVER_START_GAME,
+	SERVER_UPDATE_PLANET,
+	SERVER_CREATE_MISSILE,
+	SERVER_UPDATE_MISSILE,
+	SERVER_KILL_MISSILE,
 }
 
 
@@ -62,6 +66,12 @@ public class SCR_Client : MonoBehaviour {
 	public void ChoosePlanet(int index) {
 		AppendCommand (System.BitConverter.GetBytes((int)Command.CLIENT_PICK_PLANET));
 		AppendCommand (System.BitConverter.GetBytes(index));
+	}
+	
+	public void Shoot(float angle, float force) {
+		AppendCommand (System.BitConverter.GetBytes((int)Command.CLIENT_SHOOT));
+		AppendCommand (System.BitConverter.GetBytes(angle));
+		AppendCommand (System.BitConverter.GetBytes(force));
 	}
 	
 	
@@ -112,17 +122,44 @@ public class SCR_Client : MonoBehaviour {
 			else if (commandID == (int)Command.SERVER_UPDATE_PLANET) {
 				int planetNumber	= SCR_Action.instance.planets.Length;
 				float[] planetAngle	= new float[planetNumber];
+				int[] population	= new int[planetNumber];
+				int[] resource		= new int[planetNumber];
 				for (int i=0; i<planetNumber; i++) {
-					planetAngle[i]	= BitConverter.ToSingle(data, readIndex + (i + 1) * 4);
+					planetAngle[i]	= BitConverter.ToSingle(data, readIndex + (i * 3 + 1) * 4);
+					population[i]	= BitConverter.ToInt32(data, readIndex + (i * 3 + 2) * 4);
+					resource[i]		= BitConverter.ToInt32(data, readIndex + (i * 3 + 3) * 4);
 				}
 				
-				readIndex += (planetNumber + 1) * 4;
-				SCR_Action.instance.UpdatePlanet (planetAngle);
+				readIndex += (planetNumber * 3 + 1) * 4;
+				SCR_Action.instance.UpdatePlanet (planetAngle, population, resource);
+			}
+			else if (commandID == (int)Command.SERVER_CREATE_MISSILE) {
+				int id = BitConverter.ToInt32(data, readIndex + 1 * 4);
+				float x = BitConverter.ToSingle(data, readIndex + 2 * 4);
+				float y = BitConverter.ToSingle(data, readIndex + 3 * 4);
+				readIndex += 4 * 4;
+				SCR_Action.instance.SpawnMissile (id, x, y);
+			}
+			else if (commandID == (int)Command.SERVER_UPDATE_MISSILE) {
+				int missileNumber = BitConverter.ToInt32(data, readIndex + 1 * 4);
+				
+				for (int i=0; i<missileNumber; i++) {
+					int id = BitConverter.ToInt32(data, readIndex + (i * 5 + 2) * 4);
+					float x = BitConverter.ToSingle(data, readIndex + (i * 5 + 3) * 4);
+					float y = BitConverter.ToSingle(data, readIndex + (i * 5 + 4) * 4);
+					float vx = BitConverter.ToSingle(data, readIndex + (i * 5 + 5) * 4);
+					float vy = BitConverter.ToSingle(data, readIndex + (i * 5 + 6) * 4);
+					
+					SCR_Action.instance.UpdateMissile (id, x, y, vx, vy);
+				}
+				
+				readIndex += (missileNumber * 5 + 2) * 4;
 			}
 			else {
 				// Just to avoid loop
 				// Shouldn't go here
-				readIndex += 4;
+				Debug.Log ("ERROR");
+				readIndex ++;
 			}
 		}
 	}

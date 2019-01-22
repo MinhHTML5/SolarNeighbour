@@ -17,10 +17,12 @@ public class SCR_Action : MonoBehaviour {
 	public static SCR_Action 	instance;
 	// Prefab
 	public GameObject 			PFB_Planet;
+	public GameObject 			PFB_Missile;
 	public Material				MAT_LineHighlight;
 	// Object
 	public GameObject 			sun;
 	public GameObject[] 		planets;
+	public GameObject[] 		missile;
 	public GameObject 			homePlanet;
 	
 	public GameObject 			BTN_ShootMode;
@@ -30,7 +32,9 @@ public class SCR_Action : MonoBehaviour {
 	public GameState			gameState;
 	public int					playerID;
 	public int					planetID;
-	public Plane				solarPlane;
+	public int					population;
+	public int					resource;
+	
 	
 	// Private shit
 	private bool  				mouseDown				= false;
@@ -38,6 +42,7 @@ public class SCR_Action : MonoBehaviour {
 	private float 				mouseDownY				= 0;
 	private float 				showMainControlDelay	= 0;
 	private bool  				shootMode				= false;
+	private float				shootCooldown			= 0;
 	
 	
 	
@@ -55,7 +60,8 @@ public class SCR_Action : MonoBehaviour {
 		
 		SCR_UIMainInfoPanel.instance.ShowPanel();
 		SCR_UIMainInfoPanel.instance.ShowWaitingForPlayers();
-		solarPlane = new Plane (Vector3.up, Vector3.zero);
+		
+		missile = new GameObject[100];
     }
 	
 	// Update
@@ -87,14 +93,20 @@ public class SCR_Action : MonoBehaviour {
 					mouseDown = false;
 				}
 			}
+			
+			// Mouse wheel
+			if (Input.GetAxis("Mouse ScrollWheel") != 0) {
+				SCR_Camera.instance.Zoom (Input.GetAxis("Mouse ScrollWheel"));
+			}
 		}
 		else {
 			SCR_UIShootMode.instance.MouseHover (Input.mousePosition);
+			if (Input.GetMouseButtonDown(0) && shootCooldown <= 0) {
+				Shoot (SCR_UIShootMode.instance.aimAngle, SCR_UIShootMode.instance.aimForce);
+				shootCooldown = 0.2f;
+			}
 		}
-		// Mouse wheel
-		if (Input.GetAxis("Mouse ScrollWheel") != 0) {
-			SCR_Camera.instance.Zoom (Input.GetAxis("Mouse ScrollWheel"));
-		}
+		
 		
 		// Delay show main control
 		if (showMainControlDelay > 0) {
@@ -103,6 +115,11 @@ public class SCR_Action : MonoBehaviour {
 				showMainControlDelay = 0;
 				ShowMainControl();
 			}
+		}
+		
+		// Cooldown
+		if (shootCooldown > 0) {
+			shootCooldown -= dt;
 		}
     }
 	
@@ -196,10 +213,41 @@ public class SCR_Action : MonoBehaviour {
 		showMainControlDelay = 1.5f;
 	}
 	
-	public void UpdatePlanet (float[] planetAngle) {
+	public void UpdatePlanet (float[] a, int[] p, int[] r) {
 		// Update all planet position based on server instruction
 		for (int i=0; i<planets.Length; i++) {
-			planets[i].GetComponent<SCR_Planet>().UpdateAngle (planetAngle[i]);
+			planets[i].GetComponent<SCR_Planet>().UpdateInfo (a[i], p[i], r[i]);
+			
+			
+		
+			if (i == SCR_Action.instance.planetID) {
+				population = p[i];
+				resource = r[i];
+				SCR_UI.instance.SetResourceNumber (population, resource);
+			}
+		}
+	}
+	
+	public void Shoot (float angle, float force) {
+		SCR_Client.instance.Shoot (angle + Camera.main.gameObject.transform.localEulerAngles.y, force);
+	}
+	
+	public void SpawnMissile (int i, float x, float y) {
+		if (missile[i] == null) {
+			missile[i] = Instantiate (PFB_Missile);
+		}
+		missile[i].GetComponent<SCR_Missile>().Spawn(x, y);
+	}
+	
+	public void UpdateMissile (int i, float x, float y, float vx, float vy) {
+		if (missile[i] != null) {
+			missile[i].GetComponent<SCR_Missile>().UpdatePos (x, y, vx, vy);
+		}
+	}
+	
+	public void KillMissile (int i) {
+		if (missile[i] != null) {
+			missile[i].GetComponent<SCR_Missile>().Kill();
 		}
 	}
 	// ==============================================================================================================================

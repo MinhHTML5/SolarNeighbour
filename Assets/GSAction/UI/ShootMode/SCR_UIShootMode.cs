@@ -17,6 +17,8 @@ public class SCR_UIShootMode : MonoBehaviour {
 	
 	public RectTransform canvasRect;
 	
+	public float	aimAngle = 0;
+	public float	aimForce = 0;
 	
 	private bool 	showing = false;
 	private float 	alpha = 0;
@@ -24,6 +26,8 @@ public class SCR_UIShootMode : MonoBehaviour {
 	private float 	aimY = 0;
 	private float 	homeX = 0;
 	private float 	homeY = 0;
+	
+	
 	
     private void Start() {
         instance = this;
@@ -78,19 +82,20 @@ public class SCR_UIShootMode : MonoBehaviour {
 				}
 			}
 		
-			float rotation = 90 - SCR_Helper.AngleBetweenTwoPoint (homeX, homeY, aimX, aimY);
-			UI_ForceIndicator.transform.localEulerAngles = new Vector3(0, 0, rotation);
+			aimAngle = SCR_Helper.AngleBetweenTwoPoint (homeX, homeY, aimX, aimY);
+			
+			UI_ForceIndicator.transform.localEulerAngles = new Vector3(0, 0, 90 - aimAngle);
 			UI_ForceIndicator.GetComponent<RectTransform>().anchoredPosition = new Vector2(homeX, homeY);
 			UI_ForceIndicator.GetComponent<Image>().color = new Color(1, 1, 1, alpha);
-			UI_AimIndicator.transform.localEulerAngles = new Vector3(0, 0, rotation);
+			UI_AimIndicator.transform.localEulerAngles = new Vector3(0, 0, 90 - aimAngle);
 			UI_AimIndicator.GetComponent<Image>().color = new Color(1, 1, 1, alpha);
 			UI_AimIndicator.GetComponent<RectTransform>().anchoredPosition = new Vector2(homeX, homeY);
 			
 			float distance = SCR_Helper.DistanceBetweenTwoPoint (homeX, homeY, aimX, aimY);
-			float force = distance / 400;
-			if (force > 1) force = 1;
-			else if (force < 0.2f) force = 0.2f;
-			UI_ForceIndicator.GetComponent<Image>().fillAmount = force;
+			aimForce = distance / 400;
+			if (aimForce > 1) aimForce = 1;
+			else if (aimForce < 0.2f) aimForce = 0.2f;
+			UI_ForceIndicator.GetComponent<Image>().fillAmount = aimForce;
 			UI_AimIndicator.GetComponent<RectTransform>().sizeDelta = new Vector2(distance, 4);
 		}
 		else {

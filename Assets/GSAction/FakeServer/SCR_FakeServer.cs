@@ -12,8 +12,9 @@ public class SCR_FakeServer : MonoBehaviour {
 	
 	private GameState 		gameState;
 	private GameObject[]	fakeAIObject;
-	private SCR_FakeAI[]	fakeAI;
+	private FakeAI[]		fakeAI;
 	private FakePlanet[]	planet;
+	private FakeMissile[]	missile;
 	
 	private byte[]			broadcastPacket;
 	private byte[]			privatePacket_1;
@@ -55,13 +56,19 @@ public class SCR_FakeServer : MonoBehaviour {
 		
 		// Create 3 fake AI, who will send message like a real human opponent
 		// Their intelligence is doubtly good.
-		fakeAI = new SCR_FakeAI[3];
+		fakeAI = new FakeAI[3];
 		fakeAIObject = new GameObject[3];
 		for (int i=0; i<3; i++) {
 			fakeAIObject[i] = Instantiate (PFB_FakeAI);
 			fakeAIObject[i].transform.SetParent (transform);
-			fakeAI[i] = fakeAIObject[i].GetComponent<SCR_FakeAI>();
+			fakeAI[i] = fakeAIObject[i].GetComponent<FakeAI>();
 			fakeAI[i].Init (i + 1);
+		}
+		
+		// 100 missile in reserve should be enough
+		missile = new FakeMissile[100];
+		for (int i=0; i<100; i++) {
+			missile[i] = new FakeMissile(i);
 		}
     }
 	
@@ -160,6 +167,29 @@ public class SCR_FakeServer : MonoBehaviour {
 			AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_UPDATE_PLANET));
 			for (int i=0; i<planet.Length; i++) {
 				AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].angle));
+				AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].population));
+				AppendBroadcastCommand (System.BitConverter.GetBytes(Mathf.FloorToInt(planet[i].resource)));
+			}
+			
+			// Update missile movement
+			int numberOfActiveMissile = 0;
+			for (int i=0; i<missile.Length; i++) {
+				missile[i].FixedUpdate (dt);
+				if (missile[i].lifeTime > 0) {
+					numberOfActiveMissile ++;
+				}
+			}
+			// Propagate missile info
+			AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_UPDATE_MISSILE));
+			AppendBroadcastCommand (System.BitConverter.GetBytes((int)numberOfActiveMissile));
+			for (int i=0; i<missile.Length; i++) {
+				if (missile[i].lifeTime > 0) {
+					AppendBroadcastCommand (System.BitConverter.GetBytes(missile[i].id));
+					AppendBroadcastCommand (System.BitConverter.GetBytes(missile[i].position.x));
+					AppendBroadcastCommand (System.BitConverter.GetBytes(missile[i].position.y));
+					AppendBroadcastCommand (System.BitConverter.GetBytes(missile[i].velocity.x));
+					AppendBroadcastCommand (System.BitConverter.GetBytes(missile[i].velocity.y));
+				}
 			}
 		}
 		
@@ -230,7 +260,7 @@ public class SCR_FakeServer : MonoBehaviour {
 			else if (commandID == (int)Command.CLIENT_PICK_PLANET) {
 				if (gameState == GameState.CHOOSE_PLANET) {
 					// Player pick a planet
-					int planetID = commandID = System.BitConverter.ToInt32(data, readIndex + 1 * 4);
+					int planetID = System.BitConverter.ToInt32(data, readIndex + 1 * 4);
 					
 					// Check if the planet is picked
 					if (planet[planetID].playerID == -1) {
@@ -245,6 +275,40 @@ public class SCR_FakeServer : MonoBehaviour {
 					}
 				}
 				readIndex += 2 * 4;
+			}
+			else if (commandID == (int)Command.CLIENT_SHOOT) {
+				if (gameState == GameState.ACTION) {
+					// Player pick a planet
+					float angle = System.BitConverter.ToSingle(data, readIndex + 1 * 4);
+					float force = System.BitConverter.ToSingle(data, readIndex + 2 * 4);
+				
+					for (int i=0; i<missile.Length; i++) {
+						if (missile[i].lifeTime <= 0) {
+							Vector2 position = new Vector2 (0, 0);
+							for (int j=0; j<planet.Length; j++) {
+								if (planet[j].playerID == playerID) {
+									position = planet[j].GetPosition();
+									break;
+								}
+							}
+						
+							float speed = force * SCR_Config.MISSILE_SPEED;
+							Vector2 velocity = new Vector2 (speed * SCR_Helper.Sin (angle), speed * SCR_Helper.Cos (angle));
+							velocity += planet[i].GetVelocity();
+							
+							missile[i].Spawn (position, velocity);
+							
+							AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_CREATE_MISSILE));
+							AppendBroadcastCommand (System.BitConverter.GetBytes(i));
+							AppendBroadcastCommand (System.BitConverter.GetBytes(position.x));
+							AppendBroadcastCommand (System.BitConverter.GetBytes(position.y));
+							
+							
+							break;
+						}
+					}
+				}
+				readIndex += 3 * 4;
 			}
 			else {
 				// Just to avoid loop

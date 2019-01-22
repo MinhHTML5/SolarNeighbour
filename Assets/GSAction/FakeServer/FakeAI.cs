@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class SCR_FakeAI : MonoBehaviour {
+public class FakeAI : MonoBehaviour {
 	private int 		playerID;
 	private byte[]		packet;
 	private GameState 	gameState;
@@ -59,7 +59,7 @@ public class SCR_FakeAI : MonoBehaviour {
 			else if (commandID == (int)Command.SERVER_UPDATE_PLANET) {
 				// Cheat
 				int planetNumber = SCR_Action.instance.planets.Length;
-				readIndex += (planetNumber + 1) * 4;
+				readIndex += (planetNumber * 3 + 1) * 4;
 			}
 			else {
 				// Just to avoid loop

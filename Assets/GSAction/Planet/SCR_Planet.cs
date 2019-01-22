@@ -24,6 +24,9 @@ public class SCR_Planet : MonoBehaviour {
 	public float 		angle;
 	public float 		speed;
 	
+	public int			population;
+	public int			resource;
+	
 	private float 		rotation = 0;
 	private float 		rotateSpeed = 0;
 	
@@ -87,11 +90,14 @@ public class SCR_Planet : MonoBehaviour {
 		*/
 	}
 	
-	public void UpdateAngle (float a) {
+	public void UpdateInfo (float a, int p, int r) {
 		// Only reupdate position if difference is too big
 		if (Mathf.Abs(angle - a) > 1) {
 			angle = a;
 		}
+		
+		population = p;
+		resource = r;
 	}
 	
 	public Vector3 GetPosition () {

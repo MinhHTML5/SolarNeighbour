@@ -13,6 +13,9 @@ public class FakePlanet {
 	public float 	speed;
 	public float 	playerID;
 	
+	public int		population;
+	public float	resource;
+	
 	public float 	x;
 	public float 	z;
 	
@@ -27,12 +30,20 @@ public class FakePlanet {
 		x = SCR_Helper.Sin(angle) * distance;
 		z = SCR_Helper.Cos(angle) * distance;
 		
-		if (pSize == 1)
-			mass = 1000;
-		else if (pSize == 2)
-			mass = 10000;
-		else if (pSize == 3)
-			mass = 50000;
+		if (pSize == 1) {
+			mass = SCR_Config.MASS_TINY;
+			population = SCR_Config.POPULATION_TINY;
+		}
+		else if (pSize == 2) {
+			mass = SCR_Config.MASS_MEDIUM;
+			population = SCR_Config.POPULATION_MEDIUM;
+		}
+		else if (pSize == 3) {
+			mass = SCR_Config.MASS_LARGE;
+			population = SCR_Config.POPULATION_LARGE;
+		}
+		
+		resource = 0;
 	}
 	
 	public void FixedUpdate (float dt) {
@@ -42,5 +53,15 @@ public class FakePlanet {
 		
 		x = SCR_Helper.Sin(angle) * distance;
 		z = SCR_Helper.Cos(angle) * distance;
+		
+		
+		resource += Mathf.Sqrt(population) * SCR_Config.RESOURCE_MULTIPLIER * dt;
+	}
+	
+	public Vector2 GetPosition() {
+		return new Vector2(x, z);
+	}
+	public Vector2 GetVelocity() {
+		return new Vector2(0, 0);
 	}
 }
