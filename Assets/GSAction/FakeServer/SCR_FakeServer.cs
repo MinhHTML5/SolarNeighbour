@@ -284,17 +284,17 @@ public class SCR_FakeServer : MonoBehaviour {
 				
 					for (int i=0; i<missile.Length; i++) {
 						if (missile[i].lifeTime <= 0) {
+							float speed = force * SCR_Config.MISSILE_SPEED;
+							Vector2 velocity = new Vector2 (speed * SCR_Helper.Sin (angle), speed * SCR_Helper.Cos (angle));
+							
 							Vector2 position = new Vector2 (0, 0);
 							for (int j=0; j<planet.Length; j++) {
 								if (planet[j].playerID == playerID) {
 									position = planet[j].GetPosition();
+									velocity += planet[j].GetVelocity();
 									break;
 								}
 							}
-						
-							float speed = force * SCR_Config.MISSILE_SPEED;
-							Vector2 velocity = new Vector2 (speed * SCR_Helper.Sin (angle), speed * SCR_Helper.Cos (angle));
-							velocity += planet[i].GetVelocity();
 							
 							missile[i].Spawn (position, velocity);
 							
@@ -381,5 +381,10 @@ public class SCR_FakeServer : MonoBehaviour {
 		
 		// Switch state
 		gameState = GameState.CHOOSE_PLANET;
+	}
+	
+	public void KillMissile (int id) {
+		AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_KILL_MISSILE));
+		AppendBroadcastCommand (System.BitConverter.GetBytes(id));
 	}
 }

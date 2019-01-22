@@ -155,6 +155,11 @@ public class SCR_Client : MonoBehaviour {
 				
 				readIndex += (missileNumber * 5 + 2) * 4;
 			}
+			else if (commandID == (int)Command.SERVER_KILL_MISSILE) {
+				int id = BitConverter.ToInt32(data, readIndex + 1 * 4);
+				SCR_Action.instance.KillMissile (id);
+				readIndex += 2 * 4;
+			}
 			else {
 				// Just to avoid loop
 				// Shouldn't go here

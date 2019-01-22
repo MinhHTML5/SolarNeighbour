@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SCR_Missile : MonoBehaviour {
+	public const float DELAY_KILL = 5.0f;
 	float delayKillCount = 0;
 	Vector3 velocity = new Vector3 (0, 0, 0);
 	
@@ -35,6 +36,6 @@ public class SCR_Missile : MonoBehaviour {
 	}
 	
 	public void Kill() {
-		delayKillCount = 2;
+		delayKillCount = DELAY_KILL;
 	}
 }

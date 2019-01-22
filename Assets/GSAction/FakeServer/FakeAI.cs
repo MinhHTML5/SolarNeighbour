@@ -61,6 +61,16 @@ public class FakeAI : MonoBehaviour {
 				int planetNumber = SCR_Action.instance.planets.Length;
 				readIndex += (planetNumber * 3 + 1) * 4;
 			}
+			else if (commandID == (int)Command.SERVER_CREATE_MISSILE) {
+				readIndex += 4 * 4;
+			}
+			else if (commandID == (int)Command.SERVER_UPDATE_MISSILE) {
+				int missileNumber = BitConverter.ToInt32(data, readIndex + 1 * 4);
+				readIndex += (missileNumber * 5 + 2) * 4;
+			}
+			else if (commandID == (int)Command.SERVER_KILL_MISSILE) {
+				readIndex += 2 * 4;
+			}
 			else {
 				// Just to avoid loop
 				// Shouldn't go here

@@ -42,8 +42,7 @@ public class SCR_Action : MonoBehaviour {
 	private float 				mouseDownY				= 0;
 	private float 				showMainControlDelay	= 0;
 	private bool  				shootMode				= false;
-	private float				shootCooldown			= 0;
-	
+		
 	
 	
 	// Init
@@ -101,9 +100,8 @@ public class SCR_Action : MonoBehaviour {
 		}
 		else {
 			SCR_UIShootMode.instance.MouseHover (Input.mousePosition);
-			if (Input.GetMouseButtonDown(0) && shootCooldown <= 0) {
+			if (Input.GetMouseButtonDown(0)) {
 				Shoot (SCR_UIShootMode.instance.aimAngle, SCR_UIShootMode.instance.aimForce);
-				shootCooldown = 0.2f;
 			}
 		}
 		
@@ -115,11 +113,6 @@ public class SCR_Action : MonoBehaviour {
 				showMainControlDelay = 0;
 				ShowMainControl();
 			}
-		}
-		
-		// Cooldown
-		if (shootCooldown > 0) {
-			shootCooldown -= dt;
 		}
     }
 	
@@ -138,6 +131,7 @@ public class SCR_Action : MonoBehaviour {
 		BTN_CancelShootMode.SetActive (true);
 		SCR_Camera.instance.TacticalView();
 		shootMode = true;
+		mouseDown = false;
 		SCR_UIShootMode.instance.Show();
 	}
 	public void CancelShootMode () {
@@ -230,6 +224,7 @@ public class SCR_Action : MonoBehaviour {
 	
 	public void Shoot (float angle, float force) {
 		SCR_Client.instance.Shoot (angle + Camera.main.gameObject.transform.localEulerAngles.y, force);
+		CancelShootMode ();
 	}
 	
 	public void SpawnMissile (int i, float x, float y) {
