@@ -41,17 +41,17 @@ public class SCR_Camera : MonoBehaviour {
 	
 	private float currentXAngle			= 30;
 	private float currentYAngle			= 0;
-	private float currentZDistance		= 200;
+	private float currentZDistance		= 400;
 	private float currentOffset			= 0;
 	
 	private float targetXAngle			= 30;
 	private float targetYAngle			= 0;
-	private float targetZDistance		= 200;
+	private float targetZDistance		= 400;
 	private float targetOffset			= 0;
 	
 	private bool  lockView				= false;
 	private float previousXAngle		= 30;
-	private float previousZDistance		= 200;
+	private float previousZDistance		= 400;
 	private bool  previousViewHome		= false;
 	
 	

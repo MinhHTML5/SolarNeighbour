@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class FakeAI : MonoBehaviour {
+public class FakeAI {
 	private int 		playerID;
 	private byte[]		packet;
 	private GameState 	gameState;
@@ -79,10 +79,8 @@ public class FakeAI : MonoBehaviour {
 		}
 	}
 
-    private void Update() {
-        float dt = Time.deltaTime;
-		
-		if (gameState == GameState.INIT) {
+    public void FixedUpdate(float dt) {
+        if (gameState == GameState.INIT) {
 			// Fake ready after a while
 			timeCounter -= dt;
 			if (timeCounter <= 0) {
@@ -108,11 +106,6 @@ public class FakeAI : MonoBehaviour {
 				}
 			}
 		}
-		
-		
-		
-		
-		
 		
 		if (packet.Length > 0) {
 			SCR_FakeServer.instance.OnDataReceive (packet, playerID);

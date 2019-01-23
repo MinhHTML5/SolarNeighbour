@@ -10,11 +10,10 @@ public class SCR_FakeServer : MonoBehaviour {
 	
 	public GameObject		PFB_FakeAI;
 	
-	private GameState 		gameState;
-	private GameObject[]	fakeAIObject;
-	private FakeAI[]		fakeAI;
-	private FakePlanet[]	planet;
-	private FakeMissile[]	missile;
+	public GameState 		gameState;
+	public FakeAI[]			fakeAI;
+	public FakePlanet[]		planet;
+	public FakeMissile[]	missile;
 	
 	private byte[]			broadcastPacket;
 	private byte[]			privatePacket_1;
@@ -57,11 +56,8 @@ public class SCR_FakeServer : MonoBehaviour {
 		// Create 3 fake AI, who will send message like a real human opponent
 		// Their intelligence is doubtly good.
 		fakeAI = new FakeAI[3];
-		fakeAIObject = new GameObject[3];
 		for (int i=0; i<3; i++) {
-			fakeAIObject[i] = Instantiate (PFB_FakeAI);
-			fakeAIObject[i].transform.SetParent (transform);
-			fakeAI[i] = fakeAIObject[i].GetComponent<FakeAI>();
+			fakeAI[i] = new FakeAI();;
 			fakeAI[i].Init (i + 1);
 		}
 		
@@ -115,11 +111,18 @@ public class SCR_FakeServer : MonoBehaviour {
 		if (SCR_Loading.firstTimeRun) {
 			return;
 		}
-
-
-
+		
+		
 		
 		float dt = Time.fixedDeltaTime;
+
+
+		// Update AI
+		for (int i=0; i<fakeAI.Length; i++) {
+			fakeAI[i].FixedUpdate (dt);
+		}
+
+		
 		if (gameState == GameState.INIT) {
 			// Wait for ready command from client
 		}
@@ -292,11 +295,10 @@ public class SCR_FakeServer : MonoBehaviour {
 								if (planet[j].playerID == playerID) {
 									position = planet[j].GetPosition();
 									velocity += planet[j].GetVelocity();
+									missile[i].Spawn (j, position, velocity);
 									break;
 								}
 							}
-							
-							missile[i].Spawn (position, velocity);
 							
 							AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_CREATE_MISSILE));
 							AppendBroadcastCommand (System.BitConverter.GetBytes(i));
@@ -362,7 +364,7 @@ public class SCR_FakeServer : MonoBehaviour {
 			float 	orbitalSpeed 	= Mathf.Sqrt(SCR_Config.GRAVITY_CONSTANT * SCR_Config.SUN_MASS / currentDistance);
 			float 	angularSpeed 	= Mathf.Atan(orbitalSpeed / currentDistance) * SCR_Helper.RAD_TO_DEG;
 			
-			planet[i] = new FakePlanet(planetID, planetSize, planetDistance, planetAngle, angularSpeed);
+			planet[i] = new FakePlanet(planetID, planetSize, planetDistance, planetAngle, angularSpeed, orbitalSpeed);
 			
 			planetsToPickFrom.RemoveAt (chosen);
 			planetSizesToChoose.RemoveAt (size);

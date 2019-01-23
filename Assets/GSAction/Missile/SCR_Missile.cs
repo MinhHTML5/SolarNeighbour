@@ -25,6 +25,7 @@ public class SCR_Missile : MonoBehaviour {
     }
 	
 	public void Spawn(float x, float z) {
+		gameObject.GetComponent<TrailRenderer>().Clear();
 		gameObject.SetActive (false);
 		transform.position = new Vector3(x, 0, z);
 		gameObject.SetActive (true);

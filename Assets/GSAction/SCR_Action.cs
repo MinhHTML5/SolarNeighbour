@@ -92,17 +92,17 @@ public class SCR_Action : MonoBehaviour {
 					mouseDown = false;
 				}
 			}
-			
-			// Mouse wheel
-			if (Input.GetAxis("Mouse ScrollWheel") != 0) {
-				SCR_Camera.instance.Zoom (Input.GetAxis("Mouse ScrollWheel"));
-			}
 		}
 		else {
 			SCR_UIShootMode.instance.MouseHover (Input.mousePosition);
 			if (Input.GetMouseButtonDown(0)) {
-				Shoot (SCR_UIShootMode.instance.aimAngle, SCR_UIShootMode.instance.aimForce);
+				Shoot (SCR_UIShootMode.instance.aimAngle, 1);
 			}
+		}
+		
+		// Mouse wheel
+		if (Input.GetAxis("Mouse ScrollWheel") != 0) {
+			SCR_Camera.instance.Zoom (Input.GetAxis("Mouse ScrollWheel"));
 		}
 		
 		

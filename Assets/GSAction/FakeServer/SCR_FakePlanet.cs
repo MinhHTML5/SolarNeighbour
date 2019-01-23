@@ -11,6 +11,7 @@ public class FakePlanet {
     public float 	distance;
 	public float 	angle;
 	public float 	speed;
+	public float 	orbitalSpeed;
 	public float 	playerID;
 	
 	public int		population;
@@ -19,13 +20,15 @@ public class FakePlanet {
 	public float 	x;
 	public float 	z;
 	
-	public FakePlanet (int pID, int pSize, float pDistance, float pAngle, float pSpeed) {
-		id 			= pID;
-		size 		= pSize;
-		distance 	= pDistance;
-		angle 		= pAngle;
-		speed 		= pSpeed;
-		playerID 	= -1;
+	public FakePlanet (int pID, int pSize, float pDistance, float pAngle, float pSpeed, float poSpeed) {
+		id 				= pID;
+		size 			= pSize;
+		distance 		= pDistance;
+		angle 			= pAngle;
+		speed 			= pSpeed;
+		orbitalSpeed 	= poSpeed;
+		playerID 		= -1;
+		
 		
 		x = SCR_Helper.Sin(angle) * distance;
 		z = SCR_Helper.Cos(angle) * distance;
@@ -62,6 +65,7 @@ public class FakePlanet {
 		return new Vector2(x, z);
 	}
 	public Vector2 GetVelocity() {
-		return new Vector2(0, 0);
+		float moveAngle = angle + 90;
+		return new Vector2(orbitalSpeed * SCR_Helper.Sin(moveAngle), orbitalSpeed * SCR_Helper.Cos(moveAngle));
 	}
 }
