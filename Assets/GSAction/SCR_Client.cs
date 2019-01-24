@@ -37,6 +37,11 @@ public class SCR_Client : MonoBehaviour {
 		
 		// Send ready command
 		AppendCommand (System.BitConverter.GetBytes((int)Command.CLIENT_READY));
+		
+		// Send name
+		byte[] encoded = System.Text.Encoding.UTF8.GetBytes(SCR_Action.playerName);
+		AppendCommand (System.BitConverter.GetBytes((int)encoded.Length));
+		AppendCommand (encoded);
     }
 	
 	private void AppendCommand (byte[] data) {
@@ -110,10 +115,14 @@ public class SCR_Client : MonoBehaviour {
 			else if (commandID == (int)Command.SERVER_PROVIDE_PLANET) {
 				int playerIndex = BitConverter.ToInt32(data, readIndex + 1 * 4);
 				int planetIndex = BitConverter.ToInt32(data, readIndex + 2 * 4);
+				int byteLength = System.BitConverter.ToInt32(data, readIndex + 3 * 4);
 				
+				SCR_Action.instance.playerNames[playerIndex] = ByteToString (data, readIndex + 4 * 4, byteLength);
 				SCR_Action.instance.PickPlanet (playerIndex, planetIndex);
 				
-				readIndex += 3 * 4;
+				SCR_UILeftControl.instance.SetName (playerIndex, SCR_Action.instance.playerNames[playerIndex]);
+				
+				readIndex += 4 * 4 + byteLength;
 			}
 			else if (commandID == (int)Command.SERVER_START_GAME) {
 				SCR_Action.instance.StartGame();
@@ -168,5 +177,12 @@ public class SCR_Client : MonoBehaviour {
 				readIndex ++;
 			}
 		}
+	}
+	
+	
+	private string ByteToString (byte[] byteArray, int index, int length) {
+		byte[] newByte = new byte[length];
+		System.Array.Copy(byteArray, index, newByte, 0, length);
+		return System.Text.Encoding.UTF8.GetString(newByte);
 	}
 }

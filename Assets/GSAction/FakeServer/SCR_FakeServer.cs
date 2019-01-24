@@ -8,8 +8,6 @@ public class SCR_FakeServer : MonoBehaviour {
 	public static bool 				useFakeServer;
 	public static SCR_FakeServer 	instance;
 	
-	public GameObject		PFB_FakeAI;
-	
 	public GameState 		gameState;
 	public FakeAI[]			fakeAI;
 	public FakePlanet[]		planet;
@@ -21,7 +19,8 @@ public class SCR_FakeServer : MonoBehaviour {
 	private byte[]			privatePacket_3;
 	private byte[]			privatePacket_4;
 	private float			pickTimeOut;
-	private bool[]			playerReady					= new bool [4];
+	private bool[]			playerReady	= new bool [4];
+	private string[]		playerName	= new string [4];
 	
 	
 	
@@ -151,6 +150,11 @@ public class SCR_FakeServer : MonoBehaviour {
 							AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_PROVIDE_PLANET));
 							AppendBroadcastCommand (System.BitConverter.GetBytes(unpick[i]));
 							AppendBroadcastCommand (System.BitConverter.GetBytes(choose));
+							
+							byte[] encoded = System.Text.Encoding.UTF8.GetBytes(playerName[unpick[i]]);
+							AppendBroadcastCommand (System.BitConverter.GetBytes((int)encoded.Length));
+							AppendBroadcastCommand (encoded);
+							
 							unpick.RemoveAt(i);
 							ok = true;
 						}
@@ -245,6 +249,10 @@ public class SCR_FakeServer : MonoBehaviour {
 		while (readIndex < data.Length) {
 			commandID = System.BitConverter.ToInt32(data, readIndex);
 			if (commandID == (int)Command.CLIENT_READY) {
+				// Read their name
+				int byteLength = System.BitConverter.ToInt32(data, readIndex + 1 * 4);
+				playerName[playerID] = ByteToString (data, readIndex + 2 * 4, byteLength);
+					
 				if (gameState == GameState.INIT) {
 					// Player send ready command, mark them as ready
 					playerReady[playerID] = true;
@@ -258,7 +266,7 @@ public class SCR_FakeServer : MonoBehaviour {
 						CreatePlanet();
 					}
 				}
-				readIndex += 4;
+				readIndex += (8 + byteLength);
 			}
 			else if (commandID == (int)Command.CLIENT_PICK_PLANET) {
 				if (gameState == GameState.CHOOSE_PLANET) {
@@ -272,6 +280,10 @@ public class SCR_FakeServer : MonoBehaviour {
 						AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_PROVIDE_PLANET));
 						AppendBroadcastCommand (System.BitConverter.GetBytes(playerID));
 						AppendBroadcastCommand (System.BitConverter.GetBytes(planetID));
+						
+						byte[] encoded = System.Text.Encoding.UTF8.GetBytes(playerName[playerID]);
+						AppendBroadcastCommand (System.BitConverter.GetBytes((int)encoded.Length));
+						AppendBroadcastCommand (encoded);
 					}
 					else {
 						// If planet is picked, just ignore
@@ -389,5 +401,15 @@ public class SCR_FakeServer : MonoBehaviour {
 	public void KillMissile (int id) {
 		AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_KILL_MISSILE));
 		AppendBroadcastCommand (System.BitConverter.GetBytes(id));
+	}
+	
+	
+	
+	
+	
+	private string ByteToString (byte[] byteArray, int index, int length) {
+		byte[] newByte = new byte[length];
+		System.Array.Copy(byteArray, index, newByte, 0, length);
+		return System.Text.Encoding.UTF8.GetString(newByte);
 	}
 }

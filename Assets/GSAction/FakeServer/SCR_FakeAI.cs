@@ -51,12 +51,13 @@ public class FakeAI {
 				// Cheat
 				int playerIndex = BitConverter.ToInt32(data, readIndex + 1 * 4);
 				int planetIndex = BitConverter.ToInt32(data, readIndex + 2 * 4);
+				int byteLength = System.BitConverter.ToInt32(data, readIndex + 3 * 4);
 				
 				if (playerID == playerIndex) {
 					planetID = planetIndex;
 				}
 				
-				readIndex += 3 * 4;
+				readIndex += 4 * 4 + byteLength;
 			}
 			else if (commandID == (int)Command.SERVER_START_GAME) {
 				gameState = GameState.ACTION;
@@ -92,6 +93,26 @@ public class FakeAI {
 			timeCounter -= dt;
 			if (timeCounter <= 0) {
 				AppendCommand (System.BitConverter.GetBytes((int)Command.CLIENT_READY));
+				
+				string name = "";
+				int choose = UnityEngine.Random.Range (0, 10);
+				if (choose == 0) name = "BOT_Minh";
+				if (choose == 1) name = "BOT_Canh";
+				if (choose == 2) name = "BOT_AnHai";
+				if (choose == 3) name = "BOT_Bikini";
+				if (choose == 4) name = "BOT_Attila";
+				if (choose == 5) name = "BOT_Sameer";
+				if (choose == 6) name = "BOT_Noel";
+				if (choose == 7) name = "BOT_Stephanie";
+				if (choose == 8) name = "BOT_Loic";
+				if (choose == 9) name = "BOT_Arthur";
+				
+				int moreNumber = UnityEngine.Random.Range(1, 100);
+				name += "_" + moreNumber;
+				
+				byte[] encoded = System.Text.Encoding.UTF8.GetBytes(name);
+				AppendCommand (System.BitConverter.GetBytes((int)encoded.Length));
+				AppendCommand (encoded);
 				timeCounter += 5.0f;
 			}
 		}
@@ -131,4 +152,11 @@ public class FakeAI {
 			packet = new byte[0];
 		}
     }
+	
+	
+	private string ByteToString (byte[] byteArray, int index, int length) {
+		byte[] newByte = new byte[length];
+		System.Array.Copy(byteArray, index, newByte, 0, length);
+		return System.Text.Encoding.UTF8.GetString(newByte);
+	}
 }

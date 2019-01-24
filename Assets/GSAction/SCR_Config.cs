@@ -27,7 +27,7 @@ public class SCR_Config {
 	
 	public const float		MISSILE_COST				= 300;
 	public const float		MISSILE_SPEED				= 70.0f;
-	public const float		MISSILE_LIFE				= 50.0f;
+	public const float		MISSILE_LIFE				= 30.0f;
 	public const float		MISSILE_GRAVITY_BOOST		= 3.0f;
 	
 	// Client / server variable

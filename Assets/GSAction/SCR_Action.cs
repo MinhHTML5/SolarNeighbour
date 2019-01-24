@@ -15,6 +15,7 @@ public class SCR_Action : MonoBehaviour {
 	public const float 			MARKING_RADIUS 			= 15.0f;
 	// Instance
 	public static SCR_Action 	instance;
+	public static string		playerName;
 	// Prefab
 	public GameObject 			PFB_Planet;
 	public GameObject 			PFB_Missile;
@@ -35,6 +36,7 @@ public class SCR_Action : MonoBehaviour {
 	public int					population;
 	public int					resource;
 	public int					cooldown;
+	public string[]				playerNames = new string[4];
 	
 	
 	// Private shit
@@ -145,6 +147,7 @@ public class SCR_Action : MonoBehaviour {
 		shootMode = true;
 		mouseDown = false;
 		SCR_UIShootMode.instance.Show();
+		SCR_UILeftControl.instance.HideNameOnly();
 	}
 	public void CancelShootMode () {
 		BTN_ShootMode.SetActive (true);
@@ -152,6 +155,7 @@ public class SCR_Action : MonoBehaviour {
 		SCR_Camera.instance.CasualView();
 		shootMode = false;
 		SCR_UIShootMode.instance.Hide();
+		SCR_UILeftControl.instance.ShowNameOnly();
 	}
 	
 	
