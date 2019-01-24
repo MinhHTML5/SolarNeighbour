@@ -25,6 +25,7 @@ public class SCR_Planet : MonoBehaviour {
 	public float 		speed;
 	
 	public int			population;
+	public int			populationMax;
 	public int			resource;
 	
 	private float 		rotation = 0;
@@ -50,9 +51,18 @@ public class SCR_Planet : MonoBehaviour {
 		planet.transform.SetParent (transform);
 		planet.transform.position = new Vector3 (0, 0, distance);
 		
-		if (size == 1) 		planet.transform.localScale = new Vector3(3, 3, 3);
-		else if (size == 2) planet.transform.localScale = new Vector3(6, 6, 6);
-		else if (size == 3) planet.transform.localScale = new Vector3(9, 9, 9);
+		if (size == 1) {
+			planet.transform.localScale = new Vector3(3, 3, 3);
+			populationMax = SCR_Config.POPULATION_TINY;
+		}
+		else if (size == 2) {
+			planet.transform.localScale = new Vector3(6, 6, 6);
+			populationMax = SCR_Config.POPULATION_MEDIUM;
+		}
+		else if (size == 3) {
+			planet.transform.localScale = new Vector3(9, 9, 9);
+			populationMax = SCR_Config.POPULATION_LARGE;
+		}
 		
 		rotateSpeed = Random.Range (ROTATION_SPEED_MIN, ROTATION_SPEED_MAX);
 		
@@ -145,5 +155,9 @@ public class SCR_Planet : MonoBehaviour {
 			orbitLine.material = orbitMaterialMe;
 			//markingLine.material = orbitMaterialMe;
 		}
+	}
+	
+	public float GetHPPercentage() {
+		return (float)population / (float)populationMax;
 	}
 }

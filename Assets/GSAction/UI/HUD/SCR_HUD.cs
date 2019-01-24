@@ -9,6 +9,7 @@ public class SCR_HUD : MonoBehaviour {
 	public static SCR_HUD instance;
 	
 	public GameObject[]	UI_PlayerIndicator;
+	public Image[]		UI_PlayerHP;
 	public RectTransform canvasRect;
 	
 	private bool 	showing = false;
@@ -47,8 +48,10 @@ public class SCR_HUD : MonoBehaviour {
 					else {
 						Vector2 viewportPos = Camera.main.WorldToViewportPoint (SCR_Action.instance.planets[i].GetComponent<SCR_Planet>().GetPosition());
 						Vector2 uiPos = new Vector2 ((viewportPos.x * canvasRect.sizeDelta.x) - (canvasRect.sizeDelta.x * 0.5f), (viewportPos.y * canvasRect.sizeDelta.y) - (canvasRect.sizeDelta.y * 0.5f));
-						uiPos.y += 50;
+						uiPos.y += 20;
 						UI_PlayerIndicator[SCR_Action.instance.planets[i].GetComponent<SCR_Planet>().playerID].GetComponent<RectTransform>().anchoredPosition = uiPos;
+						
+						UI_PlayerHP[SCR_Action.instance.planets[i].GetComponent<SCR_Planet>().playerID].fillAmount = 0.15f + SCR_Action.instance.planets[i].GetComponent<SCR_Planet>().GetHPPercentage() * 0.75f;
 					}
 				}
 			}

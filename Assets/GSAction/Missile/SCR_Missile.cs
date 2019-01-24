@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SCR_Missile : MonoBehaviour {
-	public const float DELAY_KILL = 5.0f;
+	public const float DELAY_KILL = 3.0f;
 	
 	public Material[] matPlayer;
 	
