@@ -12,6 +12,8 @@ public class FakeAI {
 	private int 		planetID;
 	private float 		timeCounter;
 	
+	private float		cooldown;
+	
 	
 	
     public void Init(int id) {
@@ -56,13 +58,18 @@ public class FakeAI {
 				
 				readIndex += 3 * 4;
 			}
+			else if (commandID == (int)Command.SERVER_START_GAME) {
+				gameState = GameState.ACTION;
+				cooldown = UnityEngine.Random.Range(0, 10) + 10;
+				readIndex += 4;
+			}
 			else if (commandID == (int)Command.SERVER_UPDATE_PLANET) {
 				// Cheat
 				int planetNumber = SCR_Action.instance.planets.Length;
 				readIndex += (planetNumber * 3 + 1) * 4;
 			}
 			else if (commandID == (int)Command.SERVER_CREATE_MISSILE) {
-				readIndex += 4 * 4;
+				readIndex += 5 * 4;
 			}
 			else if (commandID == (int)Command.SERVER_UPDATE_MISSILE) {
 				int missileNumber = BitConverter.ToInt32(data, readIndex + 1 * 4);
@@ -106,6 +113,18 @@ public class FakeAI {
 				}
 			}
 		}
+		else if (gameState == GameState.ACTION) {
+			cooldown -= dt;
+			if (cooldown <= 0) {
+				AppendCommand (System.BitConverter.GetBytes((int)Command.CLIENT_SHOOT));
+				AppendCommand (System.BitConverter.GetBytes(UnityEngine.Random.Range(0, 360)));
+				AppendCommand (System.BitConverter.GetBytes(1.0f));
+				
+				cooldown = UnityEngine.Random.Range(0, 5) + 10;
+			}
+		}
+		
+		
 		
 		if (packet.Length > 0) {
 			SCR_FakeServer.instance.OnDataReceive (packet, playerID);

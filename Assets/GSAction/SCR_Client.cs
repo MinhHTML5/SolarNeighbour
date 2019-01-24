@@ -137,8 +137,9 @@ public class SCR_Client : MonoBehaviour {
 				int id = BitConverter.ToInt32(data, readIndex + 1 * 4);
 				float x = BitConverter.ToSingle(data, readIndex + 2 * 4);
 				float y = BitConverter.ToSingle(data, readIndex + 3 * 4);
-				readIndex += 4 * 4;
-				SCR_Action.instance.SpawnMissile (id, x, y);
+				int owner = BitConverter.ToInt32(data, readIndex + 4 * 4);
+				readIndex += 5 * 4;
+				SCR_Action.instance.SpawnMissile (id, x, y, owner);
 			}
 			else if (commandID == (int)Command.SERVER_UPDATE_MISSILE) {
 				int missileNumber = BitConverter.ToInt32(data, readIndex + 1 * 4);

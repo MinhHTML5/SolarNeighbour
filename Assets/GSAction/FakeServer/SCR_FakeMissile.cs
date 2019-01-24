@@ -21,11 +21,12 @@ public class FakeMissile {
 		lifeTime = 0;
 	}
 	
-	public void Spawn (int pid, Vector2 p, Vector2 v) {
+	public void Spawn (int pid, Vector2 p, Vector2 v, int d) {
 		planetID = pid;
 		lifeTime = SCR_Config.MISSILE_LIFE + DELAY_KILL;
 		position = p;
 		velocity = v;
+		damage 	 = d;
 		avoidOwnPlanetCounter = AVOID_OWN_PLANET;
 	}
 	
@@ -65,6 +66,7 @@ public class FakeMissile {
 					if (distance < SCR_Config.PLANET_RADIUS) {
 						lifeTime = DELAY_KILL;
 						SCR_FakeServer.instance.KillMissile (id);
+						SCR_FakeServer.instance.planet[i].Hit (Mathf.RoundToInt(Random.Range (0.8f, 1.2f) * damage));
 					}
 				}
 			}

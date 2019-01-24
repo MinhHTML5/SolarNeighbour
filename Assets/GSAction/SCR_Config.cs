@@ -6,7 +6,7 @@ public class SCR_Config {
     // Game variable
 	public const int		SUN_MASS				 	= 1000000000;
 	public const int		SUN_RADIUS				 	= 20;
-	public const int		PLANET_RADIUS				= 5;
+	public const int		PLANET_RADIUS				= 8;
 	public const int		NUMBER_OF_PLANET_TEMPLATE 	= 20;
 	public const int		NUMBER_OF_PLANET_CREATE		= 8;
 	public const float		ORBIT_DISTANCE_MIN			= 50;

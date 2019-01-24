@@ -34,6 +34,7 @@ public class SCR_Action : MonoBehaviour {
 	public int					planetID;
 	public int					population;
 	public int					resource;
+	public int					cooldown;
 	
 	
 	// Private shit
@@ -42,7 +43,7 @@ public class SCR_Action : MonoBehaviour {
 	private float 				mouseDownY				= 0;
 	private float 				showMainControlDelay	= 0;
 	private bool  				shootMode				= false;
-		
+	private float  				shootCooldownCounter	= 0;
 	
 	
 	// Init
@@ -61,6 +62,8 @@ public class SCR_Action : MonoBehaviour {
 		SCR_UIMainInfoPanel.instance.ShowWaitingForPlayers();
 		
 		missile = new GameObject[100];
+		
+		cooldown = 10;
     }
 	
 	// Update
@@ -103,6 +106,15 @@ public class SCR_Action : MonoBehaviour {
 		// Mouse wheel
 		if (Input.GetAxis("Mouse ScrollWheel") != 0) {
 			SCR_Camera.instance.Zoom (Input.GetAxis("Mouse ScrollWheel"));
+		}
+		
+		// Cooldown
+		if (shootCooldownCounter > 0) {
+			shootCooldownCounter -= dt;
+			if (shootCooldownCounter <= 0) {
+				shootCooldownCounter = 0;
+			}
+			SCR_UIRightControl.instance.SetShootCooldown (shootCooldownCounter / cooldown);
 		}
 		
 		
@@ -203,6 +215,7 @@ public class SCR_Action : MonoBehaviour {
 		SCR_UIMainInfoPanel.instance.HidePanel();
 		SCR_UITimer.instance.Hide();
 		SCR_UIPickPlanet.instance.Hide();
+		SCR_HUD.instance.Show();
 		
 		showMainControlDelay = 1.5f;
 	}
@@ -225,13 +238,14 @@ public class SCR_Action : MonoBehaviour {
 	public void Shoot (float angle, float force) {
 		SCR_Client.instance.Shoot (angle + Camera.main.gameObject.transform.localEulerAngles.y, force);
 		CancelShootMode ();
+		shootCooldownCounter = cooldown;
 	}
 	
-	public void SpawnMissile (int i, float x, float y) {
+	public void SpawnMissile (int i, float x, float y, int owner) {
 		if (missile[i] == null) {
 			missile[i] = Instantiate (PFB_Missile);
 		}
-		missile[i].GetComponent<SCR_Missile>().Spawn(x, y);
+		missile[i].GetComponent<SCR_Missile>().Spawn(owner, x, y);
 	}
 	
 	public void UpdateMissile (int i, float x, float y, float vx, float vy) {

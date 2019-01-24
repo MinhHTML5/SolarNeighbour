@@ -16,6 +16,7 @@ public class FakePlanet {
 	
 	public int		population;
 	public float	resource;
+	public int		damage;
 	
 	public float 	x;
 	public float 	z;
@@ -47,6 +48,7 @@ public class FakePlanet {
 		}
 		
 		resource = 0;
+		damage = 1500;
 	}
 	
 	public void FixedUpdate (float dt) {
@@ -67,5 +69,10 @@ public class FakePlanet {
 	public Vector2 GetVelocity() {
 		float moveAngle = angle + 90;
 		return new Vector2(orbitalSpeed * SCR_Helper.Sin(moveAngle), orbitalSpeed * SCR_Helper.Cos(moveAngle));
+	}
+	
+	public void Hit (int damage) {
+		population -= damage;
+		if (population < 0) population = 0;
 	}
 }

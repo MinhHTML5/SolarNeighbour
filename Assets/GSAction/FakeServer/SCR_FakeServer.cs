@@ -295,7 +295,8 @@ public class SCR_FakeServer : MonoBehaviour {
 								if (planet[j].playerID == playerID) {
 									position = planet[j].GetPosition();
 									velocity += planet[j].GetVelocity();
-									missile[i].Spawn (j, position, velocity);
+									missile[i].Spawn (j, position, velocity, planet[j].damage);
+									
 									break;
 								}
 							}
@@ -304,8 +305,8 @@ public class SCR_FakeServer : MonoBehaviour {
 							AppendBroadcastCommand (System.BitConverter.GetBytes(i));
 							AppendBroadcastCommand (System.BitConverter.GetBytes(position.x));
 							AppendBroadcastCommand (System.BitConverter.GetBytes(position.y));
-							
-							
+							AppendBroadcastCommand (System.BitConverter.GetBytes(playerID));
+						
 							break;
 						}
 					}
