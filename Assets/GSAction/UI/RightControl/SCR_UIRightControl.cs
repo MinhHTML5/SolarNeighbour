@@ -8,8 +8,11 @@ using DG.Tweening;
 public class SCR_UIRightControl : MonoBehaviour {
 	public static SCR_UIRightControl instance;
 	
-	public GameObject BTN_Shoot;
 	public GameObject PNL_ShootButtonMask;
+	public GameObject BTN_Shoot;
+	public GameObject BTN_Upgrade;
+	public GameObject UI_Upgrade;
+	
 	
     private void Start() {
         instance = this;
@@ -35,5 +38,12 @@ public class SCR_UIRightControl : MonoBehaviour {
 			BTN_Shoot.GetComponent<Button>().interactable = true;
 		}
 		PNL_ShootButtonMask.GetComponent<RectTransform>().sizeDelta = new Vector2 (155, cd * 155);
+	}
+	
+	public void ShowUpgrade() {
+		BTN_Shoot.GetComponent<RectTransform>().DOAnchorPosX (-350, 0.5f, true);
+		BTN_Upgrade.GetComponent<RectTransform>().DOAnchorPosX (-350, 0.5f, true);
+		UI_Upgrade.GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
+		
 	}
 }

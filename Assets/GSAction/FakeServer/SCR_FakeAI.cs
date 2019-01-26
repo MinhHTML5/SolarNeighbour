@@ -107,9 +107,6 @@ public class FakeAI {
 				if (choose == 8) name = "BOT_Loic";
 				if (choose == 9) name = "BOT_Arthur";
 				
-				int moreNumber = UnityEngine.Random.Range(1, 100);
-				name += "_" + moreNumber;
-				
 				byte[] encoded = System.Text.Encoding.UTF8.GetBytes(name);
 				AppendCommand (System.BitConverter.GetBytes((int)encoded.Length));
 				AppendCommand (encoded);

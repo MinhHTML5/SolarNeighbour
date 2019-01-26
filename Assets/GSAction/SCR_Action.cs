@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 using Vectrosity;
 
 public enum GameState {
@@ -100,7 +101,7 @@ public class SCR_Action : MonoBehaviour {
 		}
 		else {
 			SCR_UIShootMode.instance.MouseHover (Input.mousePosition);
-			if (Input.GetMouseButtonDown(0)) {
+			if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject()) {
 				Shoot (SCR_UIShootMode.instance.aimAngle, 1);
 			}
 		}

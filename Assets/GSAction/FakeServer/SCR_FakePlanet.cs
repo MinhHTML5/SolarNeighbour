@@ -80,9 +80,12 @@ public class FakePlanet {
 		return new Vector2(orbitalSpeed * SCR_Helper.Sin(moveAngle), orbitalSpeed * SCR_Helper.Cos(moveAngle));
 	}
 	
-	
+	public void Hit (int damage) {
+		population -= damage;
+		if (population < 0) population = 0;
+	}
 	public void Shoot (float angle, float force) {
-		if (cooldownCounter <= 0) {
+		if (cooldownCounter <= 0 && population > 0) {
 			cooldownCounter = cooldown;
 			float speed = force * SCR_Config.MISSILE_SPEED;
 			Vector2 velocity = new Vector2 (speed * SCR_Helper.Sin (angle), speed * SCR_Helper.Cos (angle));
@@ -93,8 +96,9 @@ public class FakePlanet {
 			SCR_FakeServer.instance.StartMissile (playerID, planetID, position, velocity, damage);
 		}
 	}
-	public void Hit (int damage) {
-		population -= damage;
-		if (population < 0) population = 0;
+	public void Upgrade (int upgradeID) {
+		if (population > 0) {
+			// Check cost also
+		}
 	}
 }
