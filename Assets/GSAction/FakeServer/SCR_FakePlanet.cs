@@ -5,31 +5,36 @@ using UnityEngine;
 
 
 public class FakePlanet {
-	public int 		id;
+	public int 		planetID;
+	public int 		prefabID;
 	public int		size;
 	public float 	mass;
     public float 	distance;
 	public float 	angle;
 	public float 	speed;
 	public float 	orbitalSpeed;
-	public float 	playerID;
+	public int 		playerID;
 	
 	public int		population;
 	public float	resource;
 	public int		damage;
 	
+	public float 	cooldown;
+	public float 	cooldownCounter;
+	
 	public float 	x;
 	public float 	z;
 	
-	public FakePlanet (int pID, int pSize, float pDistance, float pAngle, float pSpeed, float poSpeed) {
-		id 				= pID;
+	public FakePlanet (int pID, int prefab, int pSize, float pDistance, float pAngle, float pSpeed, float poSpeed) {
+		planetID		= pID;
+		prefabID		= prefab;
 		size 			= pSize;
 		distance 		= pDistance;
 		angle 			= pAngle;
 		speed 			= pSpeed;
 		orbitalSpeed 	= poSpeed;
 		playerID 		= -1;
-		
+				
 		
 		x = SCR_Helper.Sin(angle) * distance;
 		z = SCR_Helper.Cos(angle) * distance;
@@ -49,6 +54,7 @@ public class FakePlanet {
 		
 		resource = 0;
 		damage = 1500;
+		cooldown = 10;
 	}
 	
 	public void FixedUpdate (float dt) {
@@ -59,8 +65,11 @@ public class FakePlanet {
 		x = SCR_Helper.Sin(angle) * distance;
 		z = SCR_Helper.Cos(angle) * distance;
 		
-		
 		resource += Mathf.Sqrt(population) * SCR_Config.RESOURCE_MULTIPLIER * dt;
+		
+		if (cooldownCounter > 0) {
+			cooldownCounter -= dt;
+		}
 	}
 	
 	public Vector2 GetPosition() {
@@ -71,6 +80,19 @@ public class FakePlanet {
 		return new Vector2(orbitalSpeed * SCR_Helper.Sin(moveAngle), orbitalSpeed * SCR_Helper.Cos(moveAngle));
 	}
 	
+	
+	public void Shoot (float angle, float force) {
+		if (cooldownCounter <= 0) {
+			cooldownCounter = cooldown;
+			float speed = force * SCR_Config.MISSILE_SPEED;
+			Vector2 velocity = new Vector2 (speed * SCR_Helper.Sin (angle), speed * SCR_Helper.Cos (angle));
+			Vector2 position = new Vector2 (0, 0);
+			position = GetPosition();
+			velocity += GetVelocity();
+			
+			SCR_FakeServer.instance.StartMissile (playerID, planetID, position, velocity, damage);
+		}
+	}
 	public void Hit (int damage) {
 		population -= damage;
 		if (population < 0) population = 0;

@@ -293,32 +293,13 @@ public class SCR_FakeServer : MonoBehaviour {
 			}
 			else if (commandID == (int)Command.CLIENT_SHOOT) {
 				if (gameState == GameState.ACTION) {
-					// Player pick a planet
+					// Player order a shot
 					float angle = System.BitConverter.ToSingle(data, readIndex + 1 * 4);
 					float force = System.BitConverter.ToSingle(data, readIndex + 2 * 4);
-				
-					for (int i=0; i<missile.Length; i++) {
-						if (missile[i].lifeTime <= 0) {
-							float speed = force * SCR_Config.MISSILE_SPEED;
-							Vector2 velocity = new Vector2 (speed * SCR_Helper.Sin (angle), speed * SCR_Helper.Cos (angle));
-							
-							Vector2 position = new Vector2 (0, 0);
-							for (int j=0; j<planet.Length; j++) {
-								if (planet[j].playerID == playerID) {
-									position = planet[j].GetPosition();
-									velocity += planet[j].GetVelocity();
-									missile[i].Spawn (j, position, velocity, planet[j].damage);
-									
-									break;
-								}
-							}
-							
-							AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_CREATE_MISSILE));
-							AppendBroadcastCommand (System.BitConverter.GetBytes(i));
-							AppendBroadcastCommand (System.BitConverter.GetBytes(position.x));
-							AppendBroadcastCommand (System.BitConverter.GetBytes(position.y));
-							AppendBroadcastCommand (System.BitConverter.GetBytes(playerID));
-						
+					
+					for (int j=0; j<planet.Length; j++) {
+						if (planet[j].playerID == playerID) {
+							planet[j].Shoot (angle, force);
 							break;
 						}
 					}
@@ -370,14 +351,14 @@ public class SCR_FakeServer : MonoBehaviour {
 			int chosen 	= Random.Range(0, planetsToPickFrom.Count);
 			int size 	= Random.Range(0, planetSizesToChoose.Count);
 			
-			int 	planetID 		= planetsToPickFrom[chosen];
+			int 	prefabID 		= planetsToPickFrom[chosen];
 			int		planetSize		= planetSizesToChoose[size];
 			float 	planetDistance	= currentDistance;
 			float	planetAngle		= Random.Range(0, 360);
 			float 	orbitalSpeed 	= Mathf.Sqrt(SCR_Config.GRAVITY_CONSTANT * SCR_Config.SUN_MASS / currentDistance);
 			float 	angularSpeed 	= Mathf.Atan(orbitalSpeed / currentDistance) * SCR_Helper.RAD_TO_DEG;
 			
-			planet[i] = new FakePlanet(planetID, planetSize, planetDistance, planetAngle, angularSpeed, orbitalSpeed);
+			planet[i] = new FakePlanet(i, prefabID, planetSize, planetDistance, planetAngle, angularSpeed, orbitalSpeed);
 			
 			planetsToPickFrom.RemoveAt (chosen);
 			planetSizesToChoose.RemoveAt (size);
@@ -387,7 +368,7 @@ public class SCR_FakeServer : MonoBehaviour {
 		AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_CREATE_PLANET));
 		AppendBroadcastCommand (System.BitConverter.GetBytes(SCR_Config.NUMBER_OF_PLANET_CREATE));
 		for (int i=0; i<SCR_Config.NUMBER_OF_PLANET_CREATE; i++) {
-			AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].id));
+			AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].prefabID));
 			AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].size));
 			AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].distance));
 			AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].angle));
@@ -396,6 +377,22 @@ public class SCR_FakeServer : MonoBehaviour {
 		
 		// Switch state
 		gameState = GameState.CHOOSE_PLANET;
+	}
+	
+	public void StartMissile (int playerID, int planetID, Vector2 position, Vector2 velocity, int damage) {
+		for (int i=0; i<missile.Length; i++) {
+			if (missile[i].lifeTime <= 0) {
+				missile[i].Spawn (planetID, position, velocity, damage);
+				
+				AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_CREATE_MISSILE));
+				AppendBroadcastCommand (System.BitConverter.GetBytes(i));
+				AppendBroadcastCommand (System.BitConverter.GetBytes(position.x));
+				AppendBroadcastCommand (System.BitConverter.GetBytes(position.y));
+				AppendBroadcastCommand (System.BitConverter.GetBytes(playerID));
+			
+				break;
+			}
+		}
 	}
 	
 	public void KillMissile (int id) {
