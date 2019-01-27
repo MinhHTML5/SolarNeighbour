@@ -13,6 +13,8 @@ public class SCR_UIRightControl : MonoBehaviour {
 	public GameObject BTN_Upgrade;
 	public GameObject UI_Upgrade;
 	
+	private bool upgradeShowing = false;
+	
 	
     private void Start() {
         instance = this;
@@ -41,9 +43,16 @@ public class SCR_UIRightControl : MonoBehaviour {
 	}
 	
 	public void ShowUpgrade() {
-		BTN_Shoot.GetComponent<RectTransform>().DOAnchorPosX (-350, 0.5f, true);
-		BTN_Upgrade.GetComponent<RectTransform>().DOAnchorPosX (-350, 0.5f, true);
-		UI_Upgrade.GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
-		
+		if (!upgradeShowing) {
+			BTN_Shoot.GetComponent<RectTransform>().DOAnchorPosX (-350, 0.5f, true);
+			BTN_Upgrade.GetComponent<RectTransform>().DOAnchorPosX (-350, 0.5f, true);
+			UI_Upgrade.GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
+		}
+		else {
+			BTN_Shoot.GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
+			BTN_Upgrade.GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
+			UI_Upgrade.GetComponent<RectTransform>().DOAnchorPosX (350, 0.5f, true);
+		}
+		upgradeShowing = !upgradeShowing;
 	}
 }

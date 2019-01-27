@@ -27,4 +27,11 @@ public class SCR_Menu : MonoBehaviour {
 			SCR_Loading.LoadScene ("GSAction/SCN_Action");
 		}
 	}
+	
+	public void OnMulti() {
+		if (INP_Name.text != "") {
+			SCR_Action.playerName = INP_Name.text;
+			//SCR_Loading.LoadScene ("GSAction/SCN_Action");
+		}
+	}
 }

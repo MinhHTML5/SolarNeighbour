@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.PostProcessing;
 
 public class SCR_Camera : MonoBehaviour {
 	public static SCR_Camera instance;
@@ -60,6 +61,8 @@ public class SCR_Camera : MonoBehaviour {
 
 	private void Start() {
         instance = this;
+		
+		gameObject.GetComponent<PostProcessingBehaviour>().enabled = true;
     }
     private void Update() {
 		float dt = Time.deltaTime;
