@@ -117,7 +117,7 @@ public class SCR_Planet : MonoBehaviour {
     private void Update() {
         float dt = Time.deltaTime;
 		
-		if (SCR_Action.instance.gameState == GameState.ACTION) {
+		if (SCR_Action.instance.gameState == GameState.ACTION || SCR_Action.instance.gameState == GameState.END) {
 			rotation += rotateSpeed * dt;
 			if (rotation > 360) rotation -= 360;
 			else if (rotation < 0) rotation += 360;

@@ -24,8 +24,11 @@ public class SCR_Menu : MonoBehaviour {
 	public void OnPlay() {
 		if (INP_Name.text != "") {
 			SCR_Action.playerName = INP_Name.text;
-			SCR_Loading.LoadScene ("GSAction/SCN_Action");
 		}
+		else {
+			SCR_Action.playerName = "Anonymous";
+		}
+		SCR_Loading.LoadScene ("GSAction/SCN_Action");
 	}
 	
 	public void OnMulti() {

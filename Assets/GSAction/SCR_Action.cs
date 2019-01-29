@@ -8,7 +8,8 @@ using Vectrosity;
 public enum GameState {
 	INIT = 0,
 	CHOOSE_PLANET,
-	ACTION
+	ACTION,
+	END
 }
 
 public class SCR_Action : MonoBehaviour {
@@ -22,7 +23,7 @@ public class SCR_Action : MonoBehaviour {
 	public GameObject 			PFB_Missile;
 	public Material				MAT_LineHighlight;
 	// Object
-	public GameObject 			sun;
+	public GameObject 			sun; 
 	public GameObject[] 		planets;
 	public GameObject[] 		missile;
 	public GameObject 			homePlanet;
@@ -158,7 +159,16 @@ public class SCR_Action : MonoBehaviour {
 		SCR_UIShootMode.instance.Hide();
 		SCR_UILeftControl.instance.ShowNameOnly();
 	}
-	
+	public void ShowResultScreen(bool win) {
+		if (shootMode) CancelShootMode();
+		
+		if (win) {
+			SCR_ResultScreen.instance.ShowVictory();
+		}
+		else {
+			SCR_ResultScreen.instance.ShowDefeat();
+		}
+	}
 	
 	
 	
@@ -230,13 +240,31 @@ public class SCR_Action : MonoBehaviour {
 		for (int i=0; i<planets.Length; i++) {
 			planets[i].GetComponent<SCR_Planet>().UpdateInfo (a[i], p[i], r[i]);
 			
-			
-		
-			if (i == SCR_Action.instance.planetID) {
+			if (i == planetID) {
 				population = p[i];
 				resource = r[i];
 				SCR_UI.instance.SetResourceNumber (population, resource);
+				
+				if (gameState == GameState.ACTION && population <= 0) {
+					gameState = GameState.END;
+					ShowResultScreen (false);
+				}
 			}
+		}
+		
+		int numberOfEnemyDead = 0;
+		if (gameState == GameState.ACTION && population > 0) {
+			for (int i=0; i<planets.Length; i++) {
+				if (planets[i].GetComponent<SCR_Planet>().playerID != -1) {
+					if (planets[i].GetComponent<SCR_Planet>().population <= 0) {
+						numberOfEnemyDead ++;
+					}
+				}
+			}
+		}
+		if (numberOfEnemyDead >= 3) {
+			gameState = GameState.END;
+			ShowResultScreen (true);
 		}
 	}
 	
