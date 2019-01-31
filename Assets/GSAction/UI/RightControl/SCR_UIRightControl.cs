@@ -10,6 +10,7 @@ public class SCR_UIRightControl : MonoBehaviour {
 	
 	public GameObject PNL_ShootButtonMask;
 	public GameObject BTN_Shoot;
+	public GameObject BTN_CancelShoot;
 	public GameObject BTN_Upgrade;
 	public GameObject UI_Upgrade;
 	
@@ -44,15 +45,26 @@ public class SCR_UIRightControl : MonoBehaviour {
 	
 	public void ShowUpgrade() {
 		if (!upgradeShowing) {
-			BTN_Shoot.GetComponent<RectTransform>().DOAnchorPosX (-350, 0.5f, true);
-			BTN_Upgrade.GetComponent<RectTransform>().DOAnchorPosX (-350, 0.5f, true);
+			BTN_Shoot.GetComponent<RectTransform>().DOAnchorPosX (-450, 0.5f, true);
+			BTN_CancelShoot.GetComponent<RectTransform>().DOAnchorPosX (-450, 0.5f, true);
+			BTN_Upgrade.GetComponent<RectTransform>().DOAnchorPosX (-450, 0.5f, true);
 			UI_Upgrade.GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
+			upgradeShowing = true;
 		}
 		else {
-			BTN_Shoot.GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
-			BTN_Upgrade.GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
-			UI_Upgrade.GetComponent<RectTransform>().DOAnchorPosX (350, 0.5f, true);
+			HideUpgrade();
 		}
-		upgradeShowing = !upgradeShowing;
+	}
+	
+	public void HideUpgrade() {
+		if (upgradeShowing) {
+			BTN_Shoot.GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
+			BTN_CancelShoot.GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
+			BTN_Upgrade.GetComponent<RectTransform>().DOAnchorPosX (0, 0.5f, true);
+			UI_Upgrade.GetComponent<RectTransform>().DOAnchorPosX (450, 0.5f, true);
+			
+			SCR_UpgradeUI.instance.HideUpgradeInfo();
+			upgradeShowing = false;
+		}
 	}
 }

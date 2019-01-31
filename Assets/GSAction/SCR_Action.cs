@@ -150,6 +150,7 @@ public class SCR_Action : MonoBehaviour {
 		mouseDown = false;
 		SCR_UIShootMode.instance.Show();
 		SCR_UILeftControl.instance.HideNameOnly();
+		SCR_UIRightControl.instance.HideUpgrade();
 	}
 	public void CancelShootMode () {
 		BTN_ShootMode.SetActive (true);
