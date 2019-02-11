@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using System.IO;
+using System.Net;
+using System.Text;
+using System.Net.Sockets;
 
+using UnityEngine;
+using UnityEngine.Networking;
 
 
 
@@ -27,6 +32,8 @@ public enum Command {
 
 public class SCR_Client : MonoBehaviour {
 	public static SCR_Client instance;
+	TcpClient client;
+	NetworkStream stream;
 	
 	private byte[]	packet;
 	
@@ -37,13 +44,19 @@ public class SCR_Client : MonoBehaviour {
         instance = this;
 		packet = new byte[0];
 		
-		// Send ready command
-		AppendCommand (System.BitConverter.GetBytes((int)Command.CLIENT_READY));
-		
-		// Send name
-		byte[] encoded = System.Text.Encoding.UTF8.GetBytes(SCR_Action.playerName);
-		AppendCommand (System.BitConverter.GetBytes((int)encoded.Length));
-		AppendCommand (encoded);
+		// Connect real
+		if (!SCR_FakeServer.useFakeServer) {
+			ConnectToRealServer();
+		}
+		else {
+			// Send ready command
+			AppendCommand (System.BitConverter.GetBytes((int)Command.CLIENT_READY));
+			
+			// Send name
+			byte[] encoded = System.Text.Encoding.UTF8.GetBytes(SCR_Action.playerName);
+			AppendCommand (System.BitConverter.GetBytes((int)encoded.Length));
+			AppendCommand (encoded);
+		}
     }
 	
 	private void AppendCommand (byte[] data) {
@@ -63,8 +76,16 @@ public class SCR_Client : MonoBehaviour {
 			}
 			else {
 				// Real TCP goes here
+				stream.Write(packet, 0, packet.Length);
 			}
 			packet = new byte[0];
+		}
+		
+		// Receive packet
+		byte[] data = new byte[512];
+		int dataLength = stream.Read(data, 0, data.Length);
+		if (dataLength > 0) {
+			OnDataReceive (data, dataLength);
 		}
     }
 	
@@ -87,11 +108,13 @@ public class SCR_Client : MonoBehaviour {
 	}
 	
 	
-	public void OnDataReceive(byte[] data) {
+	public void OnDataReceive(byte[] data, int length = 0) {
 		int readIndex = 0;
 		int commandID = 0;
 		
-		while (readIndex < data.Length) {
+		if (length == 0) length = data.Length;
+		
+		while (readIndex < length) {
 			commandID = BitConverter.ToInt32(data, readIndex);
 			if (commandID == (int)Command.SERVER_PROVIDE_ID) {
 				// After we send client ready to server, server will reply with playerID
@@ -205,5 +228,24 @@ public class SCR_Client : MonoBehaviour {
 		byte[] newByte = new byte[length];
 		System.Array.Copy(byteArray, index, newByte, 0, length);
 		return System.Text.Encoding.UTF8.GetString(newByte);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private void ConnectToRealServer() {
+		client = new TcpClient("127.0.0.1", 3011);
+		stream = client.GetStream();
+		
+		AppendCommand (System.BitConverter.GetBytes((int)Command.CLIENT_READY));
+		
+		byte[] encoded = System.Text.Encoding.UTF8.GetBytes(SCR_Action.playerName);
+		AppendCommand (System.BitConverter.GetBytes((int)encoded.Length));
+		AppendCommand (encoded);
 	}
 }
