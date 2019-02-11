@@ -37,8 +37,9 @@ public class SCR_Action : MonoBehaviour {
 	public int					planetID;
 	public int					population;
 	public int					resource;
-	public int					cooldown;
+	public float				cooldown;
 	public string[]				playerNames = new string[4];
+	public bool[]				upgradeState;
 	
 	
 	// Private shit
@@ -66,8 +67,9 @@ public class SCR_Action : MonoBehaviour {
 		SCR_UIMainInfoPanel.instance.ShowWaitingForPlayers();
 		
 		missile = new GameObject[100];
+		upgradeState = new bool [SCR_Config.upgrades.Length];
 		
-		cooldown = 10;
+		cooldown = SCR_Config.MISSILE_BASE_COOLDOWN;
     }
 	
 	// Update
@@ -105,6 +107,9 @@ public class SCR_Action : MonoBehaviour {
 			if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject()) {
 				Shoot (SCR_UIShootMode.instance.aimAngle, 1);
 			}
+			else if (Input.GetMouseButton(1)) {
+				CancelShootMode();
+			}
 		}
 		
 		// Mouse wheel
@@ -118,8 +123,8 @@ public class SCR_Action : MonoBehaviour {
 			if (shootCooldownCounter <= 0) {
 				shootCooldownCounter = 0;
 			}
-			SCR_UIRightControl.instance.SetShootCooldown (shootCooldownCounter / cooldown);
 		}
+		SCR_UIRightControl.instance.SetShootCooldown (shootCooldownCounter / cooldown);
 		
 		
 		// Delay show main control
@@ -247,7 +252,6 @@ public class SCR_Action : MonoBehaviour {
 				SCR_UI.instance.SetResourceNumber (population, resource);
 				
 				if (gameState == GameState.ACTION && population <= 0) {
-					gameState = GameState.END;
 					ShowResultScreen (false);
 				}
 			}
@@ -273,6 +277,10 @@ public class SCR_Action : MonoBehaviour {
 		SCR_Client.instance.Shoot (angle + Camera.main.gameObject.transform.localEulerAngles.y, force);
 		CancelShootMode ();
 		shootCooldownCounter = cooldown;
+	}
+	
+	public void Upgrade (int upgradeID) {
+		SCR_Client.instance.Upgrade (upgradeID);
 	}
 	
 	public void SpawnMissile (int i, float x, float y, int owner) {

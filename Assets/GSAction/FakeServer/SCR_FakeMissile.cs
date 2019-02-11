@@ -10,6 +10,7 @@ public class FakeMissile {
 	public int 		planetID;
 	public int 		damage;
 	public float 	lifeTime;
+	public bool		steer;
 	
 	public Vector2 position;
 	public Vector2 velocity;
@@ -21,13 +22,14 @@ public class FakeMissile {
 		lifeTime = 0;
 	}
 	
-	public void Spawn (int pid, Vector2 p, Vector2 v, int d) {
+	public void Spawn (int pid, Vector2 p, Vector2 v, int d, bool s) {
 		planetID = pid;
 		lifeTime = SCR_Config.MISSILE_LIFE + DELAY_KILL;
 		position = p;
 		velocity = v;
 		damage 	 = d;
 		avoidOwnPlanetCounter = AVOID_OWN_PLANET;
+		steer = s;
 	}
 	
 	public void FixedUpdate (float dt) {
@@ -37,7 +39,6 @@ public class FakeMissile {
 			if (lifeTime <= DELAY_KILL) {
 				SCR_FakeServer.instance.KillMissile (id);
 			}
-			
 			
 			// Attract to Sun
 			float distance = SCR_Helper.DistanceBetweenTwoPoint (position.x, position.y, 0, 0);
@@ -59,6 +60,9 @@ public class FakeMissile {
 				else {
 					distance = SCR_Helper.DistanceBetweenTwoPoint (position.x, position.y, SCR_FakeServer.instance.planet[i].x, SCR_FakeServer.instance.planet[i].z);
 					attractionForce = (SCR_Config.GRAVITY_CONSTANT * SCR_FakeServer.instance.planet[i].mass) / (distance * distance);
+					if (steer && distance < SCR_Config.PLANET_RADIUS * 2 && SCR_FakeServer.instance.planet[i].playerID > -1) {
+						attractionForce *= 10;
+					}
 					attractionAngle = SCR_Helper.AngleBetweenTwoPoint (position.x, position.y, SCR_FakeServer.instance.planet[i].x, SCR_FakeServer.instance.planet[i].z);
 					attraction = new Vector2(attractionForce * SCR_Helper.Sin(attractionAngle), attractionForce * SCR_Helper.Cos(attractionAngle));
 					velocity += attraction * dt * SCR_Config.MISSILE_GRAVITY_BOOST;
@@ -66,7 +70,7 @@ public class FakeMissile {
 					if (distance < SCR_Config.PLANET_RADIUS) {
 						lifeTime = DELAY_KILL;
 						SCR_FakeServer.instance.KillMissile (id);
-						SCR_FakeServer.instance.planet[i].Hit (Mathf.RoundToInt(Random.Range (0.8f, 1.2f) * damage));
+						SCR_FakeServer.instance.planet[i].Hit (Mathf.RoundToInt(Random.Range (0.8f, 1.2f) * damage), planetID);
 					}
 				}
 			}
@@ -78,7 +82,5 @@ public class FakeMissile {
 		if (avoidOwnPlanetCounter > 0) {
 			avoidOwnPlanetCounter -= dt;
 		}
-		
-		
 	}
 }

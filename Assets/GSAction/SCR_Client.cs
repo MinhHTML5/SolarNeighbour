@@ -11,6 +11,7 @@ public enum Command {
 	CLIENT_READY,
 	CLIENT_PICK_PLANET,
 	CLIENT_SHOOT,
+	CLIENT_UPGRADE,
 	SERVER_PROVIDE_ID,
 	SERVER_SWITCH_STATE,
 	SERVER_CREATE_PLANET,
@@ -20,6 +21,7 @@ public enum Command {
 	SERVER_CREATE_MISSILE,
 	SERVER_UPDATE_MISSILE,
 	SERVER_KILL_MISSILE,
+	SERVER_UPGRADE,
 }
 
 
@@ -79,6 +81,10 @@ public class SCR_Client : MonoBehaviour {
 		AppendCommand (System.BitConverter.GetBytes(force));
 	}
 	
+	public void Upgrade(int upgradeID) {
+		AppendCommand (System.BitConverter.GetBytes((int)Command.CLIENT_UPGRADE));
+		AppendCommand (System.BitConverter.GetBytes(upgradeID));
+	}
 	
 	
 	public void OnDataReceive(byte[] data) {
@@ -169,6 +175,21 @@ public class SCR_Client : MonoBehaviour {
 				int id = BitConverter.ToInt32(data, readIndex + 1 * 4);
 				SCR_Action.instance.KillMissile (id);
 				readIndex += 2 * 4;
+			}
+			else if (commandID == (int)Command.SERVER_UPGRADE) {
+				int playerID = BitConverter.ToInt32(data, readIndex + 1 * 4);
+				int upgradeID = BitConverter.ToInt32(data, readIndex + 2 * 4);
+				
+				if (SCR_Action.instance.playerID == playerID) {
+					SCR_Action.instance.upgradeState[upgradeID] = true;
+					if (upgradeID == (int)UpgradeType.RELOADER) {
+						SCR_Action.instance.cooldown = SCR_Config.MISSILE_UPGRADE_COOLDOWN;
+					}
+					
+					break;
+				}
+				
+				readIndex += 3 * 4;
 			}
 			else {
 				// Just to avoid loop

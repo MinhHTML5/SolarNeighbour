@@ -57,6 +57,14 @@ public class SCR_UpgradeUI : MonoBehaviour {
 				BTN_UpgradeConfirm.GetComponent<Button>().interactable = false;
 			}
 		}
+		
+		if (SCR_Action.instance.gameState == GameState.ACTION) {
+			for (int i=0; i<(int)UpgradeType.COUNT; i++) {
+				if (SCR_Action.instance.upgradeState[i] == true) {
+					BTN_SubUpgrade[i].GetComponent<Button>().interactable = false;
+				}
+			}
+		}
     }
 	
 	public void ShowUpgradeInfo(Upgrade upgrade) {
@@ -70,6 +78,7 @@ public class SCR_UpgradeUI : MonoBehaviour {
 	}
 	
 	public void ConfirmUpgrade() {
-		
+		SCR_Action.instance.Upgrade ((int)currentUpgrade.type);
+		HideUpgradeInfo();
 	}
 }

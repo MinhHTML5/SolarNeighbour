@@ -9,6 +9,7 @@ public class SCR_UIRightControl : MonoBehaviour {
 	public static SCR_UIRightControl instance;
 	
 	public GameObject PNL_ShootButtonMask;
+	public GameObject TXT_ShootButtonPrice;
 	public GameObject BTN_Shoot;
 	public GameObject BTN_CancelShoot;
 	public GameObject BTN_Upgrade;
@@ -22,7 +23,16 @@ public class SCR_UIRightControl : MonoBehaviour {
 		GetComponent<RectTransform>().anchoredPosition = new Vector2 (400, 0);
     }
     private void Update() {
-        
+		if (SCR_Action.instance.gameState == GameState.ACTION) {
+			int price = SCR_Config.MISSILE_BASE_PRICE;
+			if (SCR_Action.instance.upgradeState[(int)UpgradeType.MATERIAL] == true) {
+				price = SCR_Config.MISSILE_UPGRADE_PRICE;
+			}
+			if (SCR_Action.instance.upgradeState[(int)UpgradeType.CLUSTER] == true) {
+				price *= 2;
+			}
+			TXT_ShootButtonPrice.GetComponent<Text>().text = "" + price;
+		}
     }
 	
 	public void Show() {
@@ -34,13 +44,27 @@ public class SCR_UIRightControl : MonoBehaviour {
 	}
 	
 	public void SetShootCooldown(float cd) {
-		if (cd > 0) {
-			BTN_Shoot.GetComponent<Button>().interactable = false;
+		if (SCR_Action.instance.gameState == GameState.ACTION) {
+			if (cd > 0) {
+				BTN_Shoot.GetComponent<Button>().interactable = false;
+			}
+			else {
+				int price = SCR_Config.MISSILE_BASE_PRICE;
+				if (SCR_Action.instance.upgradeState[(int)UpgradeType.MATERIAL] == true) {
+					price = SCR_Config.MISSILE_UPGRADE_PRICE;
+				}
+				if (SCR_Action.instance.upgradeState[(int)UpgradeType.CLUSTER] == true) {
+					price *= 2;
+				}
+				if (SCR_Action.instance.resource < price) {
+					BTN_Shoot.GetComponent<Button>().interactable = false;
+				}
+				else {
+					BTN_Shoot.GetComponent<Button>().interactable = true;
+				}
+			}
+			PNL_ShootButtonMask.GetComponent<RectTransform>().sizeDelta = new Vector2 (155, cd * 155);
 		}
-		else {
-			BTN_Shoot.GetComponent<Button>().interactable = true;
-		}
-		PNL_ShootButtonMask.GetComponent<RectTransform>().sizeDelta = new Vector2 (155, cd * 155);
 	}
 	
 	public void ShowUpgrade() {

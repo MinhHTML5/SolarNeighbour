@@ -174,7 +174,7 @@ public class SCR_FakeServer : MonoBehaviour {
 			AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_UPDATE_PLANET));
 			for (int i=0; i<planet.Length; i++) {
 				AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].angle));
-				AppendBroadcastCommand (System.BitConverter.GetBytes(planet[i].population));
+				AppendBroadcastCommand (System.BitConverter.GetBytes(Mathf.CeilToInt(planet[i].population)));
 				AppendBroadcastCommand (System.BitConverter.GetBytes(Mathf.FloorToInt(planet[i].resource)));
 			}
 			
@@ -306,6 +306,20 @@ public class SCR_FakeServer : MonoBehaviour {
 				}
 				readIndex += 3 * 4;
 			}
+			else if (commandID == (int)Command.CLIENT_UPGRADE) {
+				if (gameState == GameState.ACTION) {
+					// Player upgrade
+					int upgradeID = System.BitConverter.ToInt32(data, readIndex + 1 * 4);
+					
+					for (int j=0; j<planet.Length; j++) {
+						if (planet[j].playerID == playerID) {
+							planet[j].Upgrade (upgradeID);
+							break;
+						}
+					}
+				}
+				readIndex += 2 * 4;
+			}
 			else {
 				// Just to avoid loop
 				// Shouldn't go here
@@ -379,10 +393,10 @@ public class SCR_FakeServer : MonoBehaviour {
 		gameState = GameState.CHOOSE_PLANET;
 	}
 	
-	public void StartMissile (int playerID, int planetID, Vector2 position, Vector2 velocity, int damage) {
+	public void StartMissile (int playerID, int planetID, Vector2 position, Vector2 velocity, int damage, bool steer) {
 		for (int i=0; i<missile.Length; i++) {
 			if (missile[i].lifeTime <= 0) {
-				missile[i].Spawn (planetID, position, velocity, damage);
+				missile[i].Spawn (planetID, position, velocity, damage, steer);
 				
 				AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_CREATE_MISSILE));
 				AppendBroadcastCommand (System.BitConverter.GetBytes(i));
@@ -400,7 +414,11 @@ public class SCR_FakeServer : MonoBehaviour {
 		AppendBroadcastCommand (System.BitConverter.GetBytes(id));
 	}
 	
-	
+	public void Upgrade (int playerID, int upgradeID) {
+		AppendBroadcastCommand (System.BitConverter.GetBytes((int)Command.SERVER_UPGRADE));
+		AppendBroadcastCommand (System.BitConverter.GetBytes(playerID));
+		AppendBroadcastCommand (System.BitConverter.GetBytes(upgradeID));
+	}
 	
 	
 	

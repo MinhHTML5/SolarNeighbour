@@ -13,7 +13,10 @@ public class FakeAI {
 	private float 		timeCounter;
 	
 	private float		cooldown;
-	
+	private float		cooldownMax;
+	private int			upgradeTarget;
+	private int			upgradeNumber;
+	private bool[]		upgradeState;
 	
 	
     public void Init(int id) {
@@ -22,6 +25,10 @@ public class FakeAI {
         playerID = id;
 		planetID = -1;
 		timeCounter = playerID * 0.5f + UnityEngine.Random.Range (0, 0.5f);
+		upgradeState = new bool [SCR_Config.upgrades.Length];
+		cooldownMax = SCR_Config.MISSILE_BASE_COOLDOWN;
+		upgradeNumber = 0;
+		ChooseAnUpgradeRandomly();
     }
 	
 	private void AppendCommand (byte[] data) {
@@ -61,7 +68,7 @@ public class FakeAI {
 			}
 			else if (commandID == (int)Command.SERVER_START_GAME) {
 				gameState = GameState.ACTION;
-				cooldown = UnityEngine.Random.Range(0, 10) + 10;
+				cooldown = UnityEngine.Random.Range(0, 20) + cooldownMax;
 				readIndex += 4;
 			}
 			else if (commandID == (int)Command.SERVER_UPDATE_PLANET) {
@@ -78,6 +85,19 @@ public class FakeAI {
 			}
 			else if (commandID == (int)Command.SERVER_KILL_MISSILE) {
 				readIndex += 2 * 4;
+			}
+			else if (commandID == (int)Command.SERVER_UPGRADE) {
+				int pid = BitConverter.ToInt32(data, readIndex + 1 * 4);
+				int upgradeID = BitConverter.ToInt32(data, readIndex + 2 * 4);
+				
+				if (playerID == pid) {
+					upgradeState[upgradeID] = true;
+					if (upgradeID == (int)UpgradeType.RELOADER) {
+						cooldownMax = SCR_Config.MISSILE_UPGRADE_COOLDOWN;
+					}
+					break;
+				}
+				readIndex += 3 * 4;
 			}
 			else {
 				// Just to avoid loop
@@ -138,7 +158,30 @@ public class FakeAI {
 				AppendCommand (System.BitConverter.GetBytes(UnityEngine.Random.Range(0, 360)));
 				AppendCommand (System.BitConverter.GetBytes(1.0f));
 				
-				cooldown = UnityEngine.Random.Range(0, 5) + 10;
+				if (upgradeNumber < 3) {
+					cooldown = UnityEngine.Random.Range(0, 20) + cooldownMax;
+				}
+				else if (upgradeNumber < 6) {
+					cooldown = UnityEngine.Random.Range(0, 10) + cooldownMax;
+				}
+				else if (upgradeNumber < 9) {
+					cooldown = UnityEngine.Random.Range(0, 5) + cooldownMax;
+				}
+				else {
+					cooldown = cooldownMax;
+				}
+			}
+			
+			if (upgradeTarget == -1) {
+				upgradeNumber ++;
+				ChooseAnUpgradeRandomly();
+			}
+			else {
+				if (SCR_FakeServer.instance.planet[planetID].resource > SCR_Config.upgrades[upgradeTarget].cost + 300) {
+					AppendCommand (System.BitConverter.GetBytes((int)Command.CLIENT_UPGRADE));
+					AppendCommand (System.BitConverter.GetBytes(upgradeTarget));
+					upgradeTarget = -1;
+				}
 			}
 		}
 		
@@ -155,5 +198,20 @@ public class FakeAI {
 		byte[] newByte = new byte[length];
 		System.Array.Copy(byteArray, index, newByte, 0, length);
 		return System.Text.Encoding.UTF8.GetString(newByte);
+	}
+	
+	private void ChooseAnUpgradeRandomly() {
+		if (upgradeNumber == (int)UpgradeType.COUNT - 1) {
+			upgradeTarget = -1;
+		}
+		else {
+			bool ok = false;
+			while (!ok) {
+				upgradeTarget = UnityEngine.Random.Range (0, (int)UpgradeType.COUNT);
+				if (upgradeState[upgradeTarget] == false) {
+					ok = true;
+				}
+			}
+		}
 	}
 }
