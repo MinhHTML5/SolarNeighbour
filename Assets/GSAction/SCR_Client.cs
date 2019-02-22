@@ -69,6 +69,17 @@ public class SCR_Client : MonoBehaviour {
 		if (SCR_Loading.firstTimeRun) {
 			return;
 		}
+		
+		// Receive packet
+		if (!SCR_FakeServer.useFakeServer) {
+			// Receive packet
+			byte[] data = new byte[512];
+			int dataLength = stream.Read(data, 0, data.Length);
+			if (dataLength > 0) {
+				OnDataReceive (data, dataLength);
+			}
+		}
+		
         // Send packet
         if (packet.Length > 0) {
 			if (SCR_FakeServer.useFakeServer) {
@@ -80,14 +91,7 @@ public class SCR_Client : MonoBehaviour {
 			}
 			packet = new byte[0];
 		}
-		
-		// Receive packet
-		byte[] data = new byte[512];
-		int dataLength = stream.Read(data, 0, data.Length);
-		if (dataLength > 0) {
-			OnDataReceive (data, dataLength);
-		}
-    }
+	}
 	
 	
 	
